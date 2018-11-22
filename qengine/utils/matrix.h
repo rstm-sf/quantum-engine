@@ -1,6 +1,7 @@
 #ifndef QENGINE_UTILS_MATRIX_H_
 #define QENGINE_UTILS_MATRIX_H_
 
+#include <initializer_list>
 #include <vector>
 
 namespace qengine {
@@ -17,7 +18,7 @@ public:
   Matrix<T>& operator=(Matrix<T>&&);
 
   Matrix<T>(size_t ncols, size_t nrows, const std::vector<T>& vals);
-  Matrix<T>(size_t ncols, size_t nrows);
+  Matrix<T>(size_t ncols, size_t nrows, const std::initializer_list<T>& vals);
 
   T operator()(size_t i, size_t j) const;
   Matrix<T> operator+(const Matrix<T>& A);
@@ -47,9 +48,11 @@ public:
   friend Matrix<T1> operator*(const Matrix<T1>& A, const Matrix<T1>& B);
 
 private:
-  const size_t ncols_;
-  const size_t nrows_;
+  size_t ncols_;
+  size_t nrows_;
   std::vector<T> vals_;
+
+  Matrix<T>(size_t ncols, size_t nrows);
 };
 
 template <typename T>
@@ -69,6 +72,11 @@ Matrix<T>& Matrix<T>::operator=(Matrix<T>&&) = default;
 
 template <typename T>
 Matrix<T>::Matrix(size_t nrows, size_t ncols, const std::vector<T>& vals)
+    : nrows_{nrows}, ncols_{ncols}, vals_{vals} {}
+
+template <typename T>
+Matrix<T>::Matrix(
+    size_t nrows, size_t ncols, const std::initializer_list<T>& vals)
     : nrows_{nrows}, ncols_{ncols}, vals_{vals} {}
 
 template <typename T>
