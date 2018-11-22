@@ -20,6 +20,7 @@ public:
   Matrix<T>(size_t ncols, size_t nrows, const std::vector<T>& vals);
   Matrix<T>(size_t ncols, size_t nrows, const std::initializer_list<T>& vals);
 
+  T& operator()(size_t i, size_t j);
   T operator()(size_t i, size_t j) const;
   Matrix<T> operator+(const Matrix<T>& A);
   Matrix<T> operator-(const Matrix<T>& A);
@@ -71,6 +72,9 @@ template <typename T>
 Matrix<T>::Matrix(const Matrix<T>&) = default;
 
 template <typename T>
+Matrix<T>::Matrix(Matrix<T>&&) = default;
+
+template <typename T>
 Matrix<T>& Matrix<T>::operator=(const Matrix<T>&) = default;
 
 template <typename T>
@@ -88,6 +92,11 @@ Matrix<T>::Matrix(
 template <typename T>
 Matrix<T>::Matrix(size_t nrows, size_t ncols)
     : nrows_{nrows}, ncols_{ncols}, vals_(nrows * ncols) {}
+
+template <typename T>
+T& Matrix<T>::operator()(size_t i, size_t j) {
+  return vals_[i + j * nrows_];
+}
 
 template <typename T>
 T Matrix<T>::operator()(size_t i, size_t j) const {
