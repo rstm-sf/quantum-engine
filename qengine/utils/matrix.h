@@ -47,6 +47,12 @@ public:
   template <typename T1>
   friend Matrix<T1> operator*(const Matrix<T1>& A, const Matrix<T1>& B);
 
+  template <typename T1>
+  friend bool operator==(const Matrix<T1>& A, const Matrix<T1>& B);
+
+  template <typename T1>
+  friend bool operator!=(const Matrix<T1>& A, const Matrix<T1>& B);
+
 private:
   size_t ncols_;
   size_t nrows_;
@@ -90,7 +96,7 @@ T Matrix<T>::operator()(size_t i, size_t j) const {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) {
-  if (ncols_ != A.get_ncols() && nrows_ != A.get_nrows())
+  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
     throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
 
   Matrix<T> B(*this);
@@ -101,7 +107,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) {
-  if (ncols_ != A.get_ncols() && nrows_ != A.get_nrows())
+  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
     throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
 
   Matrix<T> B(*this);
@@ -112,7 +118,7 @@ Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) const {
-  if (ncols_ != A.get_ncols() && nrows_ != A.get_nrows())
+  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
     throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
 
   Matrix<T> B(*this);
@@ -123,7 +129,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) const {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) const {
-  if (ncols_ != A.get_ncols() && nrows_ != A.get_nrows())
+  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
     throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
 
   Matrix<T> B(*this);
@@ -134,7 +140,7 @@ Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) const {
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& A) {
-  if (ncols_ != A.get_ncols() && nrows_ != A.get_nrows())
+  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
     throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
 
   for (size_t i = 0; i < vals_.size(); ++i)
@@ -144,7 +150,7 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& A) {
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& A) {
-  if (ncols_ != A.get_ncols() && nrows_ != A.get_nrows())
+  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
     throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
 
   for (size_t i = 0; i < vals_.size(); ++i)
@@ -205,6 +211,19 @@ Matrix<T1> operator*(const Matrix<T1>& A, const Matrix<T1>& B) {
         C(i, j) += A(i, k) * B(k, j);
 
   return C;
+}
+
+template <typename T1>
+bool operator==(const Matrix<T1>& A, const Matrix<T1>& B) {
+  if (A.ncols_ != B.ncols_ || A.nrows_ != B.nrows_ )
+    return false;
+
+  return A.vals_ == B.vals_;
+}
+
+template <typename T1>
+bool operator!=(const Matrix<T1>& A, const Matrix<T1>& B) {
+  return !(A.vals_ == B.vals_);
 }
 
 } // namespace util

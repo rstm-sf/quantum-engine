@@ -18,5 +18,5 @@ TEST_F(MatrixTests, scalar_product) {
   qengine::MatrixC A(2, 2, {1.0, 0.0, 0.0, 1.0});
   A = A * 10;
 
-  EXPECT_EQ(A.get_vals(), qengine::VectorC ({10.0, 0.0, 0.0, 10.0}));
+  EXPECT_EQ(A, qengine::MatrixC (2, 2, {10.0, 0.0, 0.0, 10.0}));
 }
