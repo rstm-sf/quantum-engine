@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+
+project(gsl-download NONE)
+
+include(ExternalProject)
+
+# Version c02ddae4bcff82b17826fe3127e835f5aa54b485 happens to be master when I set this up.
+ExternalProject_Add(gsl
+  URL               https://github.com/Microsoft/GSL/archive/c02ddae4bcff82b17826fe3127e835f5aa54b485.tar.gz
+  SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/gsl-src"
+  BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/gsl-build"
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND     ""
+  INSTALL_COMMAND   ""
+  TEST_COMMAND      ""
+)
