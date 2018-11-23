@@ -1,6 +1,7 @@
 #ifndef QENGINE_UTILS_MATRIX_H_
 #define QENGINE_UTILS_MATRIX_H_
 
+#include <complex>
 #include <initializer_list>
 #include <vector>
 
@@ -19,6 +20,7 @@ public:
 
   Matrix<T>(size_t ncols, size_t nrows, const std::vector<T>& vals);
   Matrix<T>(size_t ncols, size_t nrows, const std::initializer_list<T>& vals);
+  Matrix<T>(size_t ncols, size_t nrows);
 
   T& operator()(size_t i, size_t j);
   T operator()(size_t i, size_t j) const;
@@ -28,6 +30,13 @@ public:
   Matrix<T> operator-(const Matrix<T>& A) const;
   Matrix<T>& operator+=(const Matrix<T>& A);
   Matrix<T>& operator-=(const Matrix<T>& A);
+  Matrix<T>& operator*=(const Matrix<T>& A);
+
+  T trace() const;
+  Matrix<T> transpose() const;
+  Matrix<T> dagger() const;
+  Matrix<T> conjugate() const;
+  Matrix<T> tensor_times(const Matrix<T> & A) const;
 
   size_t get_ncols() const;
   size_t get_nrows() const;
@@ -58,8 +67,6 @@ private:
   size_t ncols_;
   size_t nrows_;
   std::vector<T> vals_;
-
-  Matrix<T>(size_t ncols, size_t nrows);
 };
 
 template <typename T>
@@ -106,7 +113,7 @@ T Matrix<T>::operator()(size_t i, size_t j) const {
 template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) {
   if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
+    throw std::runtime_error{"plus_mat: Matrices are not consistent"};
 
   Matrix<T> B(*this);
   for (size_t i = 0; i < vals_.size(); ++i)
@@ -117,7 +124,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) {
 template <typename T>
 Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) {
   if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
+    throw std::runtime_error{"minus_mat: Matrices are not consistent"};
 
   Matrix<T> B(*this);
   for (size_t i = 0; i < vals_.size(); ++i)
@@ -128,7 +135,7 @@ Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) {
 template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) const {
   if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
+    throw std::runtime_error{"plus_mat: Matrices are not consistent"};
 
   Matrix<T> B(*this);
   for (size_t i = 0; i < vals_.size(); ++i)
@@ -139,7 +146,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) const {
 template <typename T>
 Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) const {
   if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
+    throw std::runtime_error{"minus_mat: Matrices are not consistent"};
 
   Matrix<T> B(*this);
   for (size_t i = 0; i < vals_.size(); ++i)
@@ -150,7 +157,7 @@ Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) const {
 template <typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& A) {
   if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
+    throw std::runtime_error{"plus_mat: Matrices are not consistent"};
 
   for (size_t i = 0; i < vals_.size(); ++i)
     vals_[i] += A.vals_[i];
@@ -160,11 +167,65 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& A) {
 template <typename T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& A) {
   if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
+    throw std::runtime_error{"minus_mat: Matrices are not consistent"};
 
   for (size_t i = 0; i < vals_.size(); ++i)
     vals_[i] -= A.vals_[i];
   return *this;
+}
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& A) { return *this * A; }
+
+template <class T>
+T Matrix<T>::trace() const {
+  if (nrows_ != ncols_)
+    throw std::runtime_error{"trace_mat: Matrix is not square"};
+  T sum{};
+  for (size_t i = 0; i < nrows_; ++i)
+    sum += vals_[i + i * nrows_];
+  return sum;
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::transpose() const {
+  Matrix<T> temp(ncols_, nrows_);
+  for (size_t i = 0; i < temp.get_nrows(); ++i)
+    for (size_t j = 0; j < temp.get_ncols(); ++j)
+      temp(i, j) = vals_[j + i * nrows_];
+  return temp;
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::dagger() const {
+  Matrix<T> temp(ncols_, nrows_);
+  for (size_t i = 0; i < temp.get_nrows(); ++i)
+    for (size_t j = 0; j < temp.get_ncols(); ++j)
+      temp(i, j) = std::conj(vals_[j + i * nrows_]);
+  return temp;
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::conjugate() const {
+  Matrix<T> temp(nrows_, ncols_);
+  for (size_t i = 0; i < temp.get_nrows(); ++i)
+    for (size_t j = 0; j < temp.get_ncols(); ++j)
+      temp(i, j) = std::conj(vals_[i + j * nrows_]);
+  return temp;
+}
+
+template <class T>
+Matrix<T> Matrix<T>::tensor_times(const Matrix<T> & A) const {
+  Matrix<T> C(nrows_ * A.get_nrows(), ncols_ * A.get_ncols());
+  for (size_t q = 0; q < A.get_ncols(); ++q)
+    for (size_t j = 0; j < ncols_; ++j)
+      for (size_t i = 0; i < nrows_; ++i)
+        for (size_t p = 0; p < A.get_nrows(); ++p) {
+          size_t n = i * A.get_nrows() + p;
+          size_t m = j * A.get_ncols() + q;
+          C(n, m) = vals_[i + j * nrows_] * A(p, q);
+        }
+  return C;
 }
 
 template <typename T>
@@ -209,7 +270,7 @@ Matrix<T1> operator*(const Matrix<T1>& A, T2 alpha) { return alpha * A; }
 template <typename T1>
 Matrix<T1> operator*(const Matrix<T1>& A, const Matrix<T1>& B) {
   if (A.ncols_ != B.nrows_)
-    throw std::runtime_error{"error: mult_mat: Matrices are not consistent"};
+    throw std::runtime_error{"mult_mat: Matrices are not consistent"};
 
   Matrix<T1> C(A.nrows_, B.ncols_);
 
