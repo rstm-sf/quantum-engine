@@ -28,10 +28,9 @@ MatrixC get_I(size_t n) {
 }
 
 void identity(MatrixC & I) {
-  size_t n = I.get_nrows();
-  if (n != I.get_ncols())
-    throw std::runtime_error{"identity: Matrix is not square"};
-  I = get_I(n);
+  Expects(I.get_nrows() == I.get_ncols());
+
+  I = get_I(I.get_nrows());
 }
 
 MatrixC ketbra_tensor_product(const VectorC& ket, const VectorC& bra) {

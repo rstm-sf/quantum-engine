@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <initializer_list>
+#include <gsl/gsl_assert>
 #include <vector>
 
 namespace qengine {
@@ -89,12 +90,16 @@ Matrix<T>& Matrix<T>::operator=(Matrix<T>&&) = default;
 
 template <typename T>
 Matrix<T>::Matrix(size_t nrows, size_t ncols, const std::vector<T>& vals)
-    : nrows_{nrows}, ncols_{ncols}, vals_{vals} {}
+    : nrows_{nrows}, ncols_{ncols}, vals_{vals} {
+  Expects(nrows_ * ncols_ == vals_.size());
+}
 
 template <typename T>
 Matrix<T>::Matrix(
     size_t nrows, size_t ncols, const std::initializer_list<T>& vals)
-    : nrows_{nrows}, ncols_{ncols}, vals_{vals} {}
+    : nrows_{nrows}, ncols_{ncols}, vals_{vals} {
+  Expects(nrows_ * ncols_ == vals_.size());
+}
 
 template <typename T>
 Matrix<T>::Matrix(size_t nrows, size_t ncols)
@@ -112,8 +117,7 @@ T Matrix<T>::operator()(size_t i, size_t j) const {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) {
-  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"plus_mat: Matrices are not consistent"};
+  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
 
   Matrix<T> B(*this);
   for (size_t i = 0; i < vals_.size(); ++i)
@@ -123,8 +127,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) {
-  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"minus_mat: Matrices are not consistent"};
+  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
 
   Matrix<T> B(*this);
   for (size_t i = 0; i < vals_.size(); ++i)
@@ -134,8 +137,7 @@ Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) const {
-  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"plus_mat: Matrices are not consistent"};
+  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
 
   Matrix<T> B(*this);
   for (size_t i = 0; i < vals_.size(); ++i)
@@ -145,8 +147,7 @@ Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) const {
 
 template <typename T>
 Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) const {
-  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"minus_mat: Matrices are not consistent"};
+  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
 
   Matrix<T> B(*this);
   for (size_t i = 0; i < vals_.size(); ++i)
@@ -156,8 +157,7 @@ Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) const {
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& A) {
-  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"plus_mat: Matrices are not consistent"};
+  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
 
   for (size_t i = 0; i < vals_.size(); ++i)
     vals_[i] += A.vals_[i];
@@ -166,8 +166,7 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& A) {
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& A) {
-  if (ncols_ != A.get_ncols() || nrows_ != A.get_nrows())
-    throw std::runtime_error{"minus_mat: Matrices are not consistent"};
+  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
 
   for (size_t i = 0; i < vals_.size(); ++i)
     vals_[i] -= A.vals_[i];
@@ -179,8 +178,8 @@ Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& A) { return *this * A; }
 
 template <class T>
 T Matrix<T>::trace() const {
-  if (nrows_ != ncols_)
-    throw std::runtime_error{"trace_mat: Matrix is not square"};
+  Expects(nrows_ == ncols_);
+
   T sum{};
   for (size_t i = 0; i < nrows_; ++i)
     sum += vals_[i + i * nrows_];
@@ -269,11 +268,9 @@ Matrix<T1> operator*(const Matrix<T1>& A, T2 alpha) { return alpha * A; }
 
 template <typename T1>
 Matrix<T1> operator*(const Matrix<T1>& A, const Matrix<T1>& B) {
-  if (A.ncols_ != B.nrows_)
-    throw std::runtime_error{"mult_mat: Matrices are not consistent"};
+  Expects(A.ncols_ == B.nrows_);
 
   Matrix<T1> C(A.nrows_, B.ncols_);
-
   // column-major order: A(i, j) = A.val[i + j * nrows_]
   for(size_t j = 0; j < B.ncols_; ++j)
     for(size_t k = 0; k < A.ncols_; ++k)

@@ -5,6 +5,7 @@ project(${TARGET})
 
 include_directories(${TARGET}
     PRIVATE
+        ${GSL_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/utils
 )

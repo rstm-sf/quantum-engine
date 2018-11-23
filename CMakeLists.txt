@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 project(quantum-engine)
 
+add_subdirectory(third_party/gsl)
 add_subdirectory(qengine)
 
 #############################################
