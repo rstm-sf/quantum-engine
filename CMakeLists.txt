@@ -7,13 +7,10 @@ add_subdirectory(qengine)
 
 #############################################
 # Unit tests
-
-add_subdirectory(third_party/googletest)
-
-# enable CTest testing
-enable_testing()
 set(BUILD_TESTING ON)
 
 if(BUILD_TESTING)
+    add_subdirectory(third_party/googletest)
+    enable_testing()
     add_subdirectory(tests)
 endif()
