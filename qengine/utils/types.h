@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Rustam Sayfutdinov, rstm.sf@gmail.com
+// Copyright (C) 2018 Rustam Sayfutdinov (rstm.sf@gmail.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -31,9 +31,14 @@
 namespace qengine {
 inline namespace type {
 
-using Complex = std::complex<double>;
-using VectorC = std::vector<Complex>;
-using MatrixC = Matrix<Complex>;
+using FCmplx = std::complex<float>;
+using DCmplx = std::complex<double>;
+
+using FCVec  = std::vector<FCmplx>;
+using DCVec  = std::vector<DCmplx>;
+
+using FCMat  = Matrix<FCmplx>;
+using DCMat  = Matrix<DCmplx>;
 
 } // namespace type
 } // namespace qengine

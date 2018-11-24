@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Rustam Sayfutdinov, rstm.sf@gmail.com
+// Copyright (C) 2018 Rustam Sayfutdinov (rstm.sf@gmail.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -27,9 +27,9 @@
 
 int main(int /*argc*/, char* /*argv*/[]) {
   std::cout << "Hello!" << std::endl;
-  qengine::MatrixC A(2, 2, {1.0, 2.0,
+  qengine::DCMat A(2, 2, {1.0, 2.0,
                             3.0, 4.0 });
-  qengine::MatrixC B(2, 2, {4.0, 3.0,
+  qengine::DCMat B(2, 2, {4.0, 3.0,
                             2.0, 1.0 });
   std::cout << A.tensor_times(B) << std::endl;
   return 0;

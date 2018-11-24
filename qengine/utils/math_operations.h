@@ -1,4 +1,4 @@
-// Copyright (C) 2018 Rustam Sayfutdinov, rstm.sf@gmail.com
+// Copyright (C) 2018 Rustam Sayfutdinov (rstm.sf@gmail.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -23,40 +23,47 @@
 #ifndef QENGINE_UTILS_MATH_OPERATIONS_H_
 #define QENGINE_UTILS_MATH_OPERATIONS_H_
 
-#include "types.h"
+#include <vector>
+
+#include "matrix.h"
 
 namespace qengine {
 inline namespace mo {
 
-MatrixC get_SWAP() {
+template <typename T>
+constexpr Matrix<T> SWAP_mat() {
   // column-major order: A(i, j) = A.val[i + j * nrows]
-  return MatrixC(2, 2, { 1.0, 0.0, 0.0, 0.0,
-                         0.0, 0.0, 1.0, 0.0,
-                         0.0, 1.0, 0.0, 0.0,
-                         0.0, 0.0, 0.0, 1.0 });
+  return Matrix<T>(4, 4, { 1.0, 0.0, 0.0, 0.0,
+                           0.0, 0.0, 1.0, 0.0,
+                           0.0, 1.0, 0.0, 0.0,
+                           0.0, 0.0, 0.0, 1.0 });
 }
 
-MatrixC get_I(size_t n) {
+template <typename T>
+constexpr Matrix<T> I_mat_1x1() { return Matrix<T>(1, 1, {1.0}); }
+template <typename T>
+constexpr Matrix<T> I_mat_2x2() {
+  return Matrix<T>(2, 2, {1.0, 0.0, 0.0, 1.0});
+}
+
+template <typename T>
+Matrix<T> I_mat(size_t n) {
   if (n == 1) {
-    return MatrixC(1, 1, {1.0});
+    return I_mat_1x1<T>();
   } else if (n == 2) {
-    return MatrixC(2, 2, {1.0, 0.0, 0.0, 1.0});
+    return I_mat_2x2<T>();
   } else {
-    MatrixC I(n, n);
+    Matrix<T> res(n, n);
     for (size_t i = 0; i < n; ++i)
-        I(i, i) = 1.0;
-    return I;
+      res(i, i) = 1.0;
+    return res;
   }
 }
 
-void identity(MatrixC & I) {
-  Expects(I.get_nrows() == I.get_ncols());
-
-  I = get_I(I.get_nrows());
-}
-
-MatrixC ketbra_tensor_product(const VectorC& ket, const VectorC& bra) {
-  MatrixC res(ket.size(), bra.size());
+template <typename T>
+Matrix<T> ketbra_tensor_product(
+    const std::vector<T>& ket, const std::vector<T>& bra) {
+  Matrix<T> res(ket.size(), bra.size());
   for (size_t j = 0; j < bra.size(); ++j)
     for (size_t i = 0; i < ket.size(); ++i)
       res(i, j) = ket[i] * bra[j];
