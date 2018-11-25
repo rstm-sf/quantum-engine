@@ -24,6 +24,7 @@
 #define QENGINE_UTILS_TYPE_H_
 
 #include <complex>
+#include <cstdint>
 #include <vector>
 
 #include "matrix.h"
@@ -31,14 +32,29 @@
 namespace qengine {
 inline namespace type {
 
-using FCmplx = std::complex<float>;
-using DCmplx = std::complex<double>;
+enum class State {BRA, KET};
 
-using FCVec  = std::vector<FCmplx>;
-using DCVec  = std::vector<DCmplx>;
+template <typename T>
+using RVec = std::vector<T>;
+template <typename T>
+using RMat = Matrix<T>;
 
-using FCMat  = Matrix<FCmplx>;
-using DCMat  = Matrix<DCmplx>;
+template <typename T>
+using Cmplx = std::complex<T>;
+
+template <typename T>
+using CVec = std::vector<Cmplx<T>>;
+template <typename T>
+using CMat = Matrix<Cmplx<T>>;
+
+using FCmplx = Cmplx<float>;
+using DCmplx = Cmplx<double>;
+
+using FCVec = CVec<float>;
+using DCVec = CVec<double>;
+
+using FCMat = CMat<float>;
+using DCMat = CMat<double>;
 
 } // namespace type
 } // namespace qengine
