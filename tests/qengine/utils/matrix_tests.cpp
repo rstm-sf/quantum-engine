@@ -126,3 +126,25 @@ TEST_F(MatrixTests, tensor_product) {
 
   EXPECT_EQ(A.tensor_times(B), C);
 }
+
+TEST_F(MatrixTests, mat_vec_product_r) {
+  qengine::DCMat A(4, 4, { 1.0,  2.0,  3.0,  4.0,
+                           5.0,  6.0,  7.0,  8.0,
+                           9.0, 10.0, 11.0, 12.0,
+                          13.0, 14.0, 15.0, 16.0 });
+  qengine::DCVec b({4.0, 3.0, 2.0, 1.0});
+  qengine::DCVec c({20.0, 60.0, 100.0, 140.0});
+
+  EXPECT_EQ(A * b, c);
+}
+
+TEST_F(MatrixTests, mat_vec_product_l) {
+  qengine::DCMat A(4, 4, { 1.0,  2.0,  3.0,  4.0,
+                           5.0,  6.0,  7.0,  8.0,
+                           9.0, 10.0, 11.0, 12.0,
+                          13.0, 14.0, 15.0, 16.0 });
+  qengine::DCVec b({4.0, 3.0, 2.0, 1.0});
+  qengine::DCVec c({50.0, 60.0, 70.0, 80.0});
+
+  EXPECT_EQ(b * A, c);
+}

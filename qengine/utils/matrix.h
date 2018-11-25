@@ -77,6 +77,14 @@ public:
   template <typename T1, typename T2>
   friend Matrix<T1> operator*(const Matrix<T1>& A, T2 alpha);
 
+  template <typename T1, typename T2>
+  friend std::vector<T2> operator*(
+      const std::vector<T2>& b, const Matrix<T1>& A);
+
+  template <typename T1, typename T2>
+  friend std::vector<T1> operator*(
+      const Matrix<T2>& A, const std::vector<T1>& b);
+
   template <typename T1>
   friend Matrix<T1> operator*(const Matrix<T1>& A, const Matrix<T1>& B);
 
@@ -287,6 +295,28 @@ Matrix<T1> operator*(T2 alpha, const Matrix<T1>& A) {
 
 template <typename T1, typename T2>
 Matrix<T1> operator*(const Matrix<T1>& A, T2 alpha) { return alpha * A; }
+
+template <typename T1, typename T2>
+std::vector<T2> operator*(const std::vector<T2>& b, const Matrix<T1>& A) {
+  Expects(A.ncols_ == b.size());
+
+  std::vector<T2> res(A.nrows_);
+  for (size_t j = 0; j < A.ncols_; ++j)
+    for (size_t i = 0; i < A.nrows_; ++i)
+      res[i] += A.vals_[i + j * A.nrows_] * b[j];
+  return res;
+}
+
+template <typename T1, typename T2>
+std::vector<T1> operator*(const Matrix<T2>& A, const std::vector<T1>& b) {
+  Expects(A.nrows_ == b.size());
+
+  std::vector<T1> res(A.ncols_);
+  for (size_t j = 0; j < A.ncols_; ++j)
+    for (size_t i = 0; i < A.nrows_; ++i)
+      res[j] += b[i] * A.vals_[i + j * A.nrows_];
+  return res;
+}
 
 template <typename T1>
 Matrix<T1> operator*(const Matrix<T1>& A, const Matrix<T1>& B) {
