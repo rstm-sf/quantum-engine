@@ -6,3 +6,4 @@ project(${TARGET})
 include(cmake/functions.cmake)
 
 add_subdirectory(qengine/utils)
+add_subdirectory(qengine/include)
