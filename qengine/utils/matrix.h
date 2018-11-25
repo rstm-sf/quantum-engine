@@ -79,11 +79,11 @@ public:
 
   template <typename T1, typename T2>
   friend std::vector<T2> operator*(
-      const std::vector<T2>& b, const Matrix<T1>& A);
+      const Matrix<T1>& A, const std::vector<T2>& b);
 
   template <typename T1, typename T2>
   friend std::vector<T1> operator*(
-      const Matrix<T2>& A, const std::vector<T1>& b);
+      const std::vector<T1>& b, const Matrix<T2>& A);
 
   template <typename T1>
   friend Matrix<T1> operator*(const Matrix<T1>& A, const Matrix<T1>& B);
@@ -297,7 +297,7 @@ template <typename T1, typename T2>
 Matrix<T1> operator*(const Matrix<T1>& A, T2 alpha) { return alpha * A; }
 
 template <typename T1, typename T2>
-std::vector<T2> operator*(const std::vector<T2>& b, const Matrix<T1>& A) {
+std::vector<T2> operator*(const Matrix<T1>& A, const std::vector<T2>& b) {
   Expects(A.ncols_ == b.size());
 
   std::vector<T2> res(A.nrows_);
@@ -308,7 +308,7 @@ std::vector<T2> operator*(const std::vector<T2>& b, const Matrix<T1>& A) {
 }
 
 template <typename T1, typename T2>
-std::vector<T1> operator*(const Matrix<T2>& A, const std::vector<T1>& b) {
+std::vector<T1> operator*(const std::vector<T1>& b, const Matrix<T2>& A) {
   Expects(A.nrows_ == b.size());
 
   std::vector<T1> res(A.ncols_);

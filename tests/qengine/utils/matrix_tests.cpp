@@ -73,11 +73,19 @@ TEST_F(MatrixTests, plus_equal) {
 }
 
 TEST_F(MatrixTests, matrix_product) {
-  qengine::DCMat A(2, 2, {1.0, 2.0, 3.0, 4.0});
-  qengine::DCMat B(2, 2, {4.0, 3.0, 2.0, 1.0});
-  qengine::DCMat C(A * B);
+  qengine::DCMat A(3, 5, {1.0,  6.0, 11.0,
+                          2.0,  7.0, 12.0,
+                          3.0,  8.0, 13.0,
+                          4.0,  9.0, 14.0,
+                          5.0, 10.0, 15.0 });
+  qengine::DCMat B(5, 3, {15.0, 12.0, 9.0, 6.0, 3.0,
+                          14.0, 11.0, 8.0, 5.0, 2.0,
+                          13.0, 10.0, 7.0, 4.0, 1.0 });
+  qengine::DCMat C(3, 3, {105.0, 330.0, 555.0,
+                           90.0, 290.0, 490.0,
+                           75.0, 250.0, 425.0 });
 
-  EXPECT_EQ(C, qengine::DCMat (2, 2, {13.0, 20.0, 5.0, 8.0}));
+  EXPECT_EQ(A * B, C);
 }
 
 TEST_F(MatrixTests, transpose) {
@@ -128,10 +136,10 @@ TEST_F(MatrixTests, tensor_product) {
 }
 
 TEST_F(MatrixTests, mat_vec_product_r) {
-  qengine::DCMat A(4, 4, { 1.0,  2.0,  3.0,  4.0,
-                           5.0,  6.0,  7.0,  8.0,
-                           9.0, 10.0, 11.0, 12.0,
-                          13.0, 14.0, 15.0, 16.0 });
+  qengine::DCMat A(4, 4, {1.0, 5.0,  9.0, 13.0,
+                          2.0, 6.0, 10.0, 14.0,
+                          3.0, 7.0, 11.0, 15.0,
+                          4.0, 8.0, 12.0, 16.0 });
   qengine::DCVec b({4.0, 3.0, 2.0, 1.0});
   qengine::DCVec c({20.0, 60.0, 100.0, 140.0});
 
@@ -139,10 +147,10 @@ TEST_F(MatrixTests, mat_vec_product_r) {
 }
 
 TEST_F(MatrixTests, mat_vec_product_l) {
-  qengine::DCMat A(4, 4, { 1.0,  2.0,  3.0,  4.0,
-                           5.0,  6.0,  7.0,  8.0,
-                           9.0, 10.0, 11.0, 12.0,
-                          13.0, 14.0, 15.0, 16.0 });
+  qengine::DCMat A(4, 4, {1.0, 5.0,  9.0, 13.0,
+                          2.0, 6.0, 10.0, 14.0,
+                          3.0, 7.0, 11.0, 15.0,
+                          4.0, 8.0, 12.0, 16.0 });
   qengine::DCVec b({4.0, 3.0, 2.0, 1.0});
   qengine::DCVec c({50.0, 60.0, 70.0, 80.0});
 
