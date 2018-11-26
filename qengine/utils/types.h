@@ -27,7 +27,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "matrix.h"
+#include "square_matrix.h"
 
 namespace qengine {
 inline namespace type {
@@ -37,7 +37,7 @@ enum class State {BRA, KET};
 template <typename T>
 using RVec = std::vector<T>;
 template <typename T>
-using RMat = Matrix<T>;
+using RMat = SquareMatrix<T>;
 
 template <typename T>
 using Cmplx = std::complex<T>;
@@ -45,7 +45,7 @@ using Cmplx = std::complex<T>;
 template <typename T>
 using CVec = std::vector<Cmplx<T>>;
 template <typename T>
-using CMat = Matrix<Cmplx<T>>;
+using CMat = SquareMatrix<Cmplx<T>>;
 
 using FCmplx = Cmplx<float>;
 using DCmplx = Cmplx<double>;

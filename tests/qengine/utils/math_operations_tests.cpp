@@ -28,10 +28,13 @@
 class MathOperationsTests : public ::testing::Test {};
 
 TEST_F(MathOperationsTests, ketbra_tensor_product) {
-  qengine::DCVec ket {{1.0, 0.0, 1.0}};
-  qengine::DCVec bra {{3.0, 2.0, 1.0}};
-  qengine::DCMat A = qengine::ketbra_tensor_product(ket, bra);
-  qengine::DCMat B(3, 3, {
+  using DCVec = std::vector<std::complex<double>>;
+  using DCMat = qengine::Matrix<std::complex<double>>;
+
+  DCVec ket {{1.0, 0.0, 1.0}};
+  DCVec bra {{3.0, 2.0, 1.0}};
+  DCMat A = qengine::ketbra_tensor_product(ket, bra);
+  DCMat B(3, 3, {
     3.0, 0.0, 3.0,
     2.0, 0.0, 2.0,
     1.0, 0.0, 1.0
@@ -41,25 +44,31 @@ TEST_F(MathOperationsTests, ketbra_tensor_product) {
 }
 
 TEST_F(MathOperationsTests, SWAP_mat) {
-  qengine::DCMat A = qengine::SWAP_mat<qengine::DCmplx>();
-  qengine::DCMat B(4, 4, { 1.0, 0.0, 0.0, 0.0,
-                           0.0, 0.0, 1.0, 0.0,
-                           0.0, 1.0, 0.0, 0.0,
-                           0.0, 0.0, 0.0, 1.0 });
+  using DCmplx = std::complex<double>;
+  using DCMat = qengine::Matrix<DCmplx>;
+
+  DCMat A = qengine::SWAP_mat<DCmplx>();
+  DCMat B(4, 4, { 1.0, 0.0, 0.0, 0.0,
+                  0.0, 0.0, 1.0, 0.0,
+                  0.0, 1.0, 0.0, 0.0,
+                  0.0, 0.0, 0.0, 1.0 });
 
   EXPECT_EQ(A, B);
 }
 
 TEST_F(MathOperationsTests, I_mat) {
-  qengine::DCMat A = qengine::I_mat_1x1<qengine::DCmplx>();
-  qengine::DCMat B = qengine::I_mat_2x2<qengine::DCmplx>();
-  qengine::DCMat C = qengine::I_mat<qengine::DCmplx>(4);
-  qengine::DCMat D(4, 4, { 1.0, 0.0, 0.0, 0.0,
-                           0.0, 1.0, 0.0, 0.0,
-                           0.0, 0.0, 1.0, 0.0,
-                           0.0, 0.0, 0.0, 1.0 });
+  using DCmplx = std::complex<double>;
+  using DCMat = qengine::Matrix<DCmplx>;
 
-  EXPECT_EQ(A, qengine::DCMat(1, 1, {1.0}));
-  EXPECT_EQ(B, qengine::DCMat(2, 2, {1.0, 0.0, 0.0, 1.0}));
+  DCMat A = qengine::I_mat_1x1<DCmplx>();
+  DCMat B = qengine::I_mat_2x2<DCmplx>();
+  DCMat C = qengine::I_mat<DCmplx>(4);
+  DCMat D(4, 4, { 1.0, 0.0, 0.0, 0.0,
+                  0.0, 1.0, 0.0, 0.0,
+                  0.0, 0.0, 1.0, 0.0,
+                  0.0, 0.0, 0.0, 1.0 });
+
+  EXPECT_EQ(A, DCMat(1, 1, {1.0}));
+  EXPECT_EQ(B, DCMat(2, 2, {1.0, 0.0, 0.0, 1.0}));
   EXPECT_EQ(C, D);
 }

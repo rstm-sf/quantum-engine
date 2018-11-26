@@ -25,8 +25,9 @@
 
 #include <complex>
 #include <initializer_list>
-#include <gsl/gsl_assert>
 #include <vector>
+
+#include <gsl/gsl_assert>
 
 namespace qengine {
 inline namespace util {
@@ -35,7 +36,7 @@ template <typename T>
 class Matrix {
 public:
   Matrix<T>();
-  ~Matrix<T>();
+  virtual ~Matrix<T>();
   Matrix<T>(const Matrix<T>&);
   Matrix<T>(Matrix<T>&&);
   Matrix<T>& operator=(const Matrix<T>&);
@@ -94,7 +95,7 @@ public:
   template <typename T1>
   friend bool operator!=(const Matrix<T1>& A, const Matrix<T1>& B);
 
-private:
+protected:
   size_t ncols_;
   size_t nrows_;
   std::vector<T> vals_;

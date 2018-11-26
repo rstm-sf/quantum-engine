@@ -23,6 +23,8 @@
 #ifndef QENGINE_INCLUDE_QUDIT_H_
 #define QENGINE_INCLUDE_QUDIT_H_
 
+#include <cstdint>
+
 #include "math_operations.h"
 #include "types.h"
 

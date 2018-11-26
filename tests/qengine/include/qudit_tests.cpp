@@ -56,14 +56,14 @@ TEST_F(QuditTests, braket) {
 TEST_F(QuditTests, ketbra) {
   qengine::Qudit<double> a(2);
   qengine::Qudit<double> b(2, qengine::State::BRA);
-  qengine::CMat<double> M(2, 2, {1.0, 0.0, 0.0, 0.0});
+  qengine::CMat<double> M(2, {1.0, 0.0, 0.0, 0.0});
 
   EXPECT_EQ(a.tensor_times(b), M);
 }
 
 TEST_F(QuditTests, apply) {
   qengine::Qudit<double> a(2);
-  qengine::CMat<double> X(2, 2, {0.0, 1.0, 1.0, 0.0});
+  qengine::CMat<double> X(2, {0.0, 1.0, 1.0, 0.0});
   a.apply(X);
 
   EXPECT_EQ(a.get_probabilities(), qengine::RVec<double>({0.0, 1.0}));

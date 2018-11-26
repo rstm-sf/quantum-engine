@@ -25,35 +25,37 @@
 
 #include <vector>
 
-#include "matrix.h"
+#include <gsl/gsl_assert>
+
+#include "square_matrix.h"
 
 namespace qengine {
 inline namespace mo {
 
 template <typename T>
-constexpr Matrix<T> SWAP_mat() {
+constexpr SquareMatrix<T> SWAP_mat() {
   // column-major order: A(i, j) = A.val[i + j * nrows]
-  return Matrix<T>(4, 4, { 1.0, 0.0, 0.0, 0.0,
-                           0.0, 0.0, 1.0, 0.0,
-                           0.0, 1.0, 0.0, 0.0,
-                           0.0, 0.0, 0.0, 1.0 });
+  return SquareMatrix<T>(4, { 1.0, 0.0, 0.0, 0.0,
+                              0.0, 0.0, 1.0, 0.0,
+                              0.0, 1.0, 0.0, 0.0,
+                              0.0, 0.0, 0.0, 1.0 });
 }
 
 template <typename T>
-constexpr Matrix<T> I_mat_1x1() { return Matrix<T>(1, 1, {1.0}); }
+constexpr SquareMatrix<T> I_mat_1x1() { return SquareMatrix<T>(1, {1.0}); }
 template <typename T>
-constexpr Matrix<T> I_mat_2x2() {
-  return Matrix<T>(2, 2, {1.0, 0.0, 0.0, 1.0});
+constexpr SquareMatrix<T> I_mat_2x2() {
+  return SquareMatrix<T>(2, {1.0, 0.0, 0.0, 1.0});
 }
 
 template <typename T>
-Matrix<T> I_mat(size_t n) {
+SquareMatrix<T> I_mat(size_t n) {
   if (n == 1) {
     return I_mat_1x1<T>();
   } else if (n == 2) {
     return I_mat_2x2<T>();
   } else {
-    Matrix<T> res(n, n);
+    SquareMatrix<T> res(n);
     for (size_t i = 0; i < n; ++i)
       res(i, i) = 1.0;
     return res;
@@ -61,9 +63,11 @@ Matrix<T> I_mat(size_t n) {
 }
 
 template <typename T>
-Matrix<T> ketbra_tensor_product(
+SquareMatrix<T> ketbra_tensor_product(
     const std::vector<T>& ket, const std::vector<T>& bra) {
-  Matrix<T> res(ket.size(), bra.size());
+  Expects(ket.size() == bra.size());
+
+  SquareMatrix<T> res(ket.size());
   for (size_t j = 0; j < bra.size(); ++j)
     for (size_t i = 0; i < ket.size(); ++i)
       res(i, j) = ket[i] * bra[j];
