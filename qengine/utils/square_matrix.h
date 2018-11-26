@@ -81,7 +81,7 @@ SquareMatrix<T>::SquareMatrix(size_t n, const std::initializer_list<T>& vals)
 template <typename T>
 size_t SquareMatrix<T>::get_n() const { return this->nrows_; }
 
-} // namespace type
+} // namespace util
 } // namespace qengine
 
 #endif // QENGINE_UTILS_SQUARE_MATRIX_H_

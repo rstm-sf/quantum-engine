@@ -13,4 +13,4 @@ include_directories(${TARGET}
 file(GLOB TARGET_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 add_executable(${TARGET} ${TARGET_SRC})
 
-target_compile_features(${TARGET} PUBLIC cxx_std_14)
+target_compile_features(${TARGET} PUBLIC cxx_std_17)

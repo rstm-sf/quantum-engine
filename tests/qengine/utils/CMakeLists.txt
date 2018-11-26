@@ -10,6 +10,6 @@ target_include_directories(${TARGET}
         ${CMAKE_SOURCE_DIR}/qengine/utils
 )
 
-target_compile_features(${TARGET} PUBLIC cxx_std_14)
+target_compile_features(${TARGET} PUBLIC cxx_std_17)
 
 add_test(test_all ${TARGET})
