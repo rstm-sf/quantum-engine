@@ -41,30 +41,22 @@ TEST_F(QuditTests, probabilities) {
 
 TEST_F(QuditTests, dagger) {
   qengine::Qudit<double> a(2);
-  qengine::Qudit<double> b(2, qengine::State::BRA);
+  qengine::Qudit<double> b(2);
 
   EXPECT_EQ(a.dagger(), b);
 }
 
 TEST_F(QuditTests, braket) {
   qengine::Qudit<double> a(2);
-  qengine::Qudit<double> b(2, qengine::State::BRA);
+  qengine::Qudit<double> b(2);
 
   EXPECT_EQ(b.times(a), 1.0);
 }
 
 TEST_F(QuditTests, ketbra) {
   qengine::Qudit<double> a(2);
-  qengine::Qudit<double> b(2, qengine::State::BRA);
+  qengine::Qudit<double> b(2);
   qengine::CMat<double> M(2, {1.0, 0.0, 0.0, 0.0});
 
   EXPECT_EQ(a.tensor_times(b), M);
-}
-
-TEST_F(QuditTests, apply) {
-  qengine::Qudit<double> a(2);
-  qengine::CMat<double> X(2, {0.0, 1.0, 1.0, 0.0});
-  a.apply(X);
-
-  EXPECT_EQ(a.get_probabilities(), qengine::RVec<double>({0.0, 1.0}));
 }

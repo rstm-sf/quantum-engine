@@ -41,11 +41,10 @@ public:
   Qudit<T>& operator=(const Qudit<T>&);
   Qudit<T>& operator=(Qudit<T>&&);
 
-  Qudit<T>(uint64_t dim, State state = State::KET);
+  Qudit<T>(uint64_t dim);
 
   uint64_t get_dim() const;
   CVec<T> get_amplitudes() const;
-  State get_state() const;
 
   T get_probability(uint64_t i) const;
   RVec<T> get_probabilities() const;
@@ -53,9 +52,6 @@ public:
   Qudit<T> dagger() const;
   Cmplx<T> times(const Qudit<T>& ket) const;
   CMat<T> tensor_times(const Qudit<T>& ket) const;
-
-  template <typename S>
-  void apply(const Matrix<S>& mat);
 
   template <typename S>
   friend bool operator==(const Qudit<S>& a, const Qudit<S>& b);
@@ -66,7 +62,6 @@ public:
 private:
   uint64_t dim_;
   CVec<T> amplitudes_;
-  State state_;
 };
 
 template <typename T>
@@ -88,8 +83,7 @@ template <typename T>
 Qudit<T>& Qudit<T>::operator=(Qudit<T>&&) = default;
 
 template <typename T>
-Qudit<T>::Qudit(uint64_t dim, State state)
-  : dim_{dim}, state_{state}, amplitudes_(dim) {
+Qudit<T>::Qudit(uint64_t dim) : dim_{dim}, amplitudes_(dim) {
   amplitudes_[0] = 1.0;
 }
 
@@ -98,9 +92,6 @@ uint64_t Qudit<T>::get_dim() const { return dim_; }
 
 template <typename T>
 CVec<T> Qudit<T>::get_amplitudes() const { return amplitudes_; }
-
-template <typename T>
-State Qudit<T>::get_state() const { return state_; }
 
 template <typename T>
 T Qudit<T>::get_probability(uint64_t i) const {
@@ -119,7 +110,6 @@ RVec<T> Qudit<T>::get_probabilities() const {
 template <typename T>
 Qudit<T> Qudit<T>::dagger() const {
   Qudit<T> res(*this);
-  res.state_ = (state_ == State::KET) ? State::BRA : State::KET;
   for (auto & res_a : res.amplitudes_)
     res_a = std::conj(res_a);
   return res;
@@ -127,7 +117,6 @@ Qudit<T> Qudit<T>::dagger() const {
 
 template <typename T>
 Cmplx<T> Qudit<T>::times(const Qudit<T>& ket) const {
-  Expects(state_ == State::BRA && ket.state_ == State::KET);
   Expects(ket.dim_ == dim_);
 
   Cmplx<T> res(0.0);
@@ -138,20 +127,12 @@ Cmplx<T> Qudit<T>::times(const Qudit<T>& ket) const {
 
 template <typename T>
 CMat<T> Qudit<T>::tensor_times(const Qudit<T>& bra) const {
-  Expects(state_ == State::KET && bra.state_ == State::BRA);
-
   return ketbra_tensor_product(amplitudes_, bra.amplitudes_);
-}
-
-template <typename T>
-template <typename S>
-void Qudit<T>::apply(const Matrix<S>& mat) {
-  amplitudes_ = (state_ == State::KET) ? mat * amplitudes_ : amplitudes_ * mat;
 }
 
 template <typename S>
 bool operator==(const Qudit<S>& a, const Qudit<S>& b) {
-  return (a.state_ == b.state_) && (a.amplitudes_ == b.amplitudes_);
+  return a.amplitudes_ == b.amplitudes_;
 }
 
 template <typename S>

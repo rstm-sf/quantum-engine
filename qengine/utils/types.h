@@ -32,8 +32,6 @@
 namespace qengine {
 inline namespace type {
 
-enum class State {BRA, KET};
-
 template <typename T>
 using RVec = std::vector<T>;
 template <typename T>
