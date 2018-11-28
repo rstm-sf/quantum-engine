@@ -28,18 +28,16 @@
 namespace qengine {
 inline namespace qstate {
 
-class IReg<T> {
+template <typename T>
+class IReg {
 public:
   virtual ~IReg<T>() = default;
 
-  virtual uint64_t size() const = 0;
+  virtual uint64_t dim() const = 0;
+  virtual uint64_t sdim() const = 0;
+  virtual uint64_t nstates() const = 0;
 
   virtual RVec<T> probabilities() const = 0;
-  virtual T probability(uint64_t idx) const = 0;
-
-  virtual IReg<T> conjugate() const = 0;
-  virtual Cmplx<T> braket_product(const IReg<T>& ket) const = 0;
-  virtual CMat<T> ketbra_product(const IReg<T>& bra) const = 0;
 };
 
 } // namespace qstate

@@ -23,8 +23,7 @@
 #ifndef QENGINE_INCLUDE_QUDIT_H_
 #define QENGINE_INCLUDE_QUDIT_H_
 
-#include <cstdint>
-
+#include "ireg.h"
 #include "math_operations.h"
 #include "types.h"
 
@@ -32,7 +31,7 @@ namespace qengine {
 inline namespace qstate {
 
 template <typename T>
-class Qudit {
+class Qudit : public IReg<T> {
 public:
   Qudit<T>();
   ~Qudit<T>();
@@ -43,15 +42,15 @@ public:
 
   Qudit<T>(uint64_t dim);
 
-  uint64_t get_dim() const;
-  CVec<T> get_amplitudes() const;
+  virtual uint64_t dim() const;
+  virtual uint64_t sdim() const;
+  virtual uint64_t nstates() const;
 
-  T get_probability(uint64_t i) const;
-  RVec<T> get_probabilities() const;
+  virtual RVec<T> probabilities() const;
 
-  Qudit<T> dagger() const;
-  Cmplx<T> times(const Qudit<T>& ket) const;
-  CMat<T> tensor_times(const Qudit<T>& ket) const;
+  Qudit<T> conjugate() const;
+  Cmplx<T> braket_product(const Qudit<T>& ket) const;
+  CMat<T> ketbra_product(const Qudit<T>& ket) const;
 
   template <typename S>
   friend bool operator==(const Qudit<S>& a, const Qudit<S>& b);
@@ -60,7 +59,6 @@ public:
   friend bool operator!=(const Qudit<S>& a, const Qudit<S>& b);
 
 private:
-  uint64_t dim_;
   CVec<T> amplitudes_;
 };
 
@@ -83,32 +81,30 @@ template <typename T>
 Qudit<T>& Qudit<T>::operator=(Qudit<T>&&) = default;
 
 template <typename T>
-Qudit<T>::Qudit(uint64_t dim) : dim_{dim}, amplitudes_(dim) {
+Qudit<T>::Qudit(uint64_t dim) : amplitudes_(dim) {
   amplitudes_[0] = 1.0;
 }
 
 template <typename T>
-uint64_t Qudit<T>::get_dim() const { return dim_; }
+uint64_t Qudit<T>::dim() const { return amplitudes_.size(); }
 
 template <typename T>
-CVec<T> Qudit<T>::get_amplitudes() const { return amplitudes_; }
+uint64_t Qudit<T>::sdim() const { return amplitudes_.size(); }
 
 template <typename T>
-T Qudit<T>::get_probability(uint64_t i) const {
-  return std::real(amplitudes_[i] * std::conj(amplitudes_[i]));
+uint64_t Qudit<T>::nstates() const { return 1; }
+
+template <typename T>
+RVec<T> Qudit<T>::probabilities() const {
+  RVec<T> res;
+  res.reserve(amplitudes_.size());
+  for(auto const & a : amplitudes_)
+    res.push_back(probability(a));
+  return res;
 }
 
 template <typename T>
-RVec<T> Qudit<T>::get_probabilities() const {
-  RVec<T> probabilities;
-  probabilities.reserve(dim_);
-  for (uint64_t i = 0; i < dim_; ++i)
-    probabilities.push_back(get_probability(i));
-  return probabilities;
-}
-
-template <typename T>
-Qudit<T> Qudit<T>::dagger() const {
+Qudit<T> Qudit<T>::conjugate() const {
   Qudit<T> res(*this);
   for (auto & res_a : res.amplitudes_)
     res_a = std::conj(res_a);
@@ -116,17 +112,17 @@ Qudit<T> Qudit<T>::dagger() const {
 }
 
 template <typename T>
-Cmplx<T> Qudit<T>::times(const Qudit<T>& ket) const {
-  Expects(ket.dim_ == dim_);
+Cmplx<T> Qudit<T>::braket_product(const Qudit<T>& ket) const {
+  Expects(ket.sdim() == this->sdim());
 
   Cmplx<T> res(0.0);
-  for(uint64_t i = 0; i < dim_; ++i)
+  for(uint64_t i = 0; i < amplitudes_.size(); ++i)
     res += amplitudes_[i] * ket.amplitudes_[i];
   return res;
 }
 
 template <typename T>
-CMat<T> Qudit<T>::tensor_times(const Qudit<T>& bra) const {
+CMat<T> Qudit<T>::ketbra_product(const Qudit<T>& bra) const {
   return ketbra_tensor_product(amplitudes_, bra.amplitudes_);
 }
 

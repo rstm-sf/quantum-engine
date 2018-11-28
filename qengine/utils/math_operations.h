@@ -23,6 +23,7 @@
 #ifndef QENGINE_UTILS_MATH_OPERATIONS_H_
 #define QENGINE_UTILS_MATH_OPERATIONS_H_
 
+#include <complex>
 #include <cstdint>
 #include <vector>
 
@@ -74,6 +75,11 @@ SquareMatrix<T> ketbra_tensor_product(
     for (uint64_t i = 0; i < n; ++i)
       res(i, j) = ket[i] * bra[j];
   return res;
+}
+
+template <typename T>
+T probability(std::complex<T> amplitude) {
+  return std::real(amplitude * std::conj(amplitude));
 }
 
 } // namespace mo

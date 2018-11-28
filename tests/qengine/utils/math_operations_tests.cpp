@@ -72,3 +72,7 @@ TEST_F(MathOperationsTests, I_mat) {
   EXPECT_EQ(B, DCMat(2, 2, {1.0, 0.0, 0.0, 1.0}));
   EXPECT_EQ(C, D);
 }
+
+TEST_F(MathOperationsTests, probability) {
+  EXPECT_EQ(qengine::probability(std::complex(1.0, 0.0)), 1.0);
+}
