@@ -23,6 +23,7 @@
 #ifndef QENGINE_UTILS_MATH_OPERATIONS_H_
 #define QENGINE_UTILS_MATH_OPERATIONS_H_
 
+#include <cstdint>
 #include <vector>
 
 #include <gsl/gsl_assert>
@@ -49,14 +50,14 @@ constexpr SquareMatrix<T> I_mat_2x2() {
 }
 
 template <typename T>
-SquareMatrix<T> I_mat(size_t n) {
+SquareMatrix<T> I_mat(uint64_t n) {
   if (n == 1) {
     return I_mat_1x1<T>();
   } else if (n == 2) {
     return I_mat_2x2<T>();
   } else {
     SquareMatrix<T> res(n);
-    for (size_t i = 0; i < n; ++i)
+    for (uint64_t i = 0; i < n; ++i)
       res(i, i) = 1.0;
     return res;
   }
@@ -67,9 +68,10 @@ SquareMatrix<T> ketbra_tensor_product(
     const std::vector<T>& ket, const std::vector<T>& bra) {
   Expects(ket.size() == bra.size());
 
-  SquareMatrix<T> res(ket.size());
-  for (size_t j = 0; j < bra.size(); ++j)
-    for (size_t i = 0; i < ket.size(); ++i)
+  const uint64_t n = ket.size();
+  SquareMatrix<T> res(n);
+  for (uint64_t j = 0; j < n; ++j)
+    for (uint64_t i = 0; i < n; ++i)
       res(i, j) = ket[i] * bra[j];
   return res;
 }

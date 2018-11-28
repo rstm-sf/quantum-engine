@@ -33,7 +33,7 @@ TEST_F(MatrixTests, simple) {
   DCVec vals({1.0, 0.0, 0.0, 1.0});
   DCMat A(2, 2, vals);
 
-  EXPECT_EQ(A.get_vals(), vals);
+  EXPECT_EQ(A.vals(), vals);
 }
 
 TEST_F(MatrixTests, scalar_product) {

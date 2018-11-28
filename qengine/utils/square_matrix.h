@@ -23,6 +23,7 @@
 #ifndef QENGINE_UTILS_SQUARE_MATRIX_H_
 #define QENGINE_UTILS_SQUARE_MATRIX_H_
 
+#include <cstdint>
 #include <initializer_list>
 #include <vector>
 
@@ -41,11 +42,9 @@ public:
   SquareMatrix<T>& operator=(const SquareMatrix<T>&);
   SquareMatrix<T>& operator=(SquareMatrix<T>&&);
 
-  SquareMatrix<T>(size_t n);
-  SquareMatrix<T>(size_t n, const std::vector<T>& vals);
-  SquareMatrix<T>(size_t n, const std::initializer_list<T>& vals);
-
-  size_t get_n() const;
+  SquareMatrix<T>(uint64_t n);
+  SquareMatrix<T>(uint64_t n, const std::vector<T>& vals);
+  SquareMatrix<T>(uint64_t n, const std::initializer_list<T>& vals);
 };
 
 template <typename T>
@@ -67,19 +66,16 @@ template <typename T>
 SquareMatrix<T>& SquareMatrix<T>::operator=(SquareMatrix<T>&&) = default;
 
 template <typename T>
-SquareMatrix<T>::SquareMatrix(size_t n)
-    : Matrix<T>(n, n) {}
+SquareMatrix<T>::SquareMatrix(uint64_t n)
+  : Matrix<T>(n, n) {}
 
 template <typename T>
-SquareMatrix<T>::SquareMatrix(size_t n, const std::vector<T>& vals)
-    : Matrix<T>(n, n, vals) {}
+SquareMatrix<T>::SquareMatrix(uint64_t n, const std::vector<T>& vals)
+  : Matrix<T>(n, n, vals) {}
 
 template <typename T>
-SquareMatrix<T>::SquareMatrix(size_t n, const std::initializer_list<T>& vals)
-    : Matrix<T>(n, n, vals) {}
-
-template <typename T>
-size_t SquareMatrix<T>::get_n() const { return this->nrows_; }
+SquareMatrix<T>::SquareMatrix(uint64_t n, const std::initializer_list<T>& vals)
+  : Matrix<T>(n, n, vals) {}
 
 } // namespace util
 } // namespace qengine

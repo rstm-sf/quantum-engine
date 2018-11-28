@@ -24,6 +24,7 @@
 #define QENGINE_UTILS_MATRIX_H_
 
 #include <complex>
+#include <cstdint>
 #include <initializer_list>
 #include <vector>
 
@@ -42,12 +43,13 @@ public:
   Matrix<T>& operator=(const Matrix<T>&);
   Matrix<T>& operator=(Matrix<T>&&);
 
-  Matrix<T>(size_t ncols, size_t nrows, const std::vector<T>& vals);
-  Matrix<T>(size_t ncols, size_t nrows, const std::initializer_list<T>& vals);
-  Matrix<T>(size_t ncols, size_t nrows);
+  Matrix<T>(uint64_t ncols, uint64_t nrows, const std::vector<T>& vals);
+  Matrix<T>(
+      uint64_t ncols, uint64_t nrows, const std::initializer_list<T>& vals);
+  Matrix<T>(uint64_t ncols, uint64_t nrows);
 
-  T& operator()(size_t i, size_t j);
-  T operator()(size_t i, size_t j) const;
+  T& operator()(uint64_t i, uint64_t j);
+  T operator()(uint64_t i, uint64_t j) const;
   Matrix<T> operator+(const Matrix<T>& A);
   Matrix<T> operator-(const Matrix<T>& A);
   Matrix<T> operator+(const Matrix<T>& A) const;
@@ -62,9 +64,10 @@ public:
   Matrix<T> conjugate() const;
   Matrix<T> tensor_times(const Matrix<T> & A) const;
 
-  size_t get_ncols() const;
-  size_t get_nrows() const;
-  std::vector<T> get_vals() const;
+  uint64_t ncols() const;
+  uint64_t nrows() const;
+  std::vector<T> vals() const;
+  uint64_t size() const;
 
   template <typename T1>
   friend std::ostream& operator<<(std::ostream& out, const Matrix<T1>& A);
@@ -96,8 +99,8 @@ public:
   friend bool operator!=(const Matrix<T1>& A, const Matrix<T1>& B);
 
 protected:
-  size_t ncols_;
-  size_t nrows_;
+  uint64_t ncols_;
+  uint64_t nrows_;
   std::vector<T> vals_;
 };
 
@@ -120,86 +123,86 @@ template <typename T>
 Matrix<T>& Matrix<T>::operator=(Matrix<T>&&) = default;
 
 template <typename T>
-Matrix<T>::Matrix(size_t nrows, size_t ncols, const std::vector<T>& vals)
-    : nrows_{nrows}, ncols_{ncols}, vals_{vals} {
-  Expects(nrows_ * ncols_ == vals_.size());
+Matrix<T>::Matrix(uint64_t nrows, uint64_t ncols, const std::vector<T>& vals)
+  : nrows_{nrows}, ncols_{ncols}, vals_{vals} {
+  Expects(nrows_ * ncols_ == this->size());
 }
 
 template <typename T>
 Matrix<T>::Matrix(
-    size_t nrows, size_t ncols, const std::initializer_list<T>& vals)
-    : nrows_{nrows}, ncols_{ncols}, vals_{vals} {
-  Expects(nrows_ * ncols_ == vals_.size());
+    uint64_t nrows, uint64_t ncols, const std::initializer_list<T>& vals)
+  : nrows_{nrows}, ncols_{ncols}, vals_{vals} {
+  Expects(nrows_ * ncols_ == this->size());
 }
 
 template <typename T>
-Matrix<T>::Matrix(size_t nrows, size_t ncols)
-    : nrows_{nrows}, ncols_{ncols}, vals_(nrows * ncols) {}
+Matrix<T>::Matrix(uint64_t nrows, uint64_t ncols)
+  : nrows_{nrows}, ncols_{ncols}, vals_(nrows * ncols) {}
 
 template <typename T>
-T& Matrix<T>::operator()(size_t i, size_t j) {
+T& Matrix<T>::operator()(uint64_t i, uint64_t j) {
   return vals_[i + j * nrows_];
 }
 
 template <typename T>
-T Matrix<T>::operator()(size_t i, size_t j) const {
+T Matrix<T>::operator()(uint64_t i, uint64_t j) const {
   return vals_[i + j * nrows_];
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) {
-  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
+  Expects(ncols_ == A.ncols_ && nrows_ == A.nrows_);
 
   Matrix<T> B(*this);
-  for (size_t i = 0; i < vals_.size(); ++i)
+  for (uint64_t i = 0; i < vals_.size(); ++i)
     B.vals_[i] += A.vals_[i];
   return B;
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) {
-  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
+  Expects(ncols_ == A.ncols_ && nrows_ == A.nrows_);
 
   Matrix<T> B(*this);
-  for (size_t i = 0; i < vals_.size(); ++i)
+  for (uint64_t i = 0; i < vals_.size(); ++i)
     B.vals_[i] -= A.vals_[i];
   return B;
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T>& A) const {
-  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
+  Expects(ncols_ == A.ncols_ && nrows_ == A.nrows_);
 
   Matrix<T> B(*this);
-  for (size_t i = 0; i < vals_.size(); ++i)
+  for (uint64_t i = 0; i < vals_.size(); ++i)
     B.vals_[i] += A.vals_[i];
   return B;
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::operator-(const Matrix<T>& A) const {
-  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
+  Expects(ncols_ == A.ncols_ && nrows_ == A.nrows_);
 
   Matrix<T> B(*this);
-  for (size_t i = 0; i < vals_.size(); ++i)
+  for (uint64_t i = 0; i < vals_.size(); ++i)
     B.vals_[i] -= A.vals_[i];
   return B;
 }
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& A) {
-  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
+  Expects(ncols_ == A.ncols_ && nrows_ == A.nrows_);
 
-  for (size_t i = 0; i < vals_.size(); ++i)
+  for (uint64_t i = 0; i < vals_.size(); ++i)
     vals_[i] += A.vals_[i];
   return *this;
 }
 
 template <typename T>
 Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& A) {
-  Expects(ncols_ == A.get_ncols() && nrows_ == A.get_nrows());
+  Expects(ncols_ == A.ncols_ && nrows_ == A.nrows_);
 
-  for (size_t i = 0; i < vals_.size(); ++i)
+  for (uint64_t i = 0; i < vals_.size(); ++i)
     vals_[i] -= A.vals_[i];
   return *this;
 }
@@ -212,7 +215,7 @@ T Matrix<T>::trace() const {
   Expects(nrows_ == ncols_);
 
   T sum{};
-  for (size_t i = 0; i < nrows_; ++i)
+  for (uint64_t i = 0; i < nrows_; ++i)
     sum += vals_[i + i * nrows_];
   return sum;
 }
@@ -220,57 +223,62 @@ T Matrix<T>::trace() const {
 template <typename T>
 Matrix<T> Matrix<T>::transpose() const {
   Matrix<T> temp(ncols_, nrows_);
-  for (size_t i = 0; i < temp.get_nrows(); ++i)
-    for (size_t j = 0; j < temp.get_ncols(); ++j)
-      temp(i, j) = vals_[j + i * nrows_];
+  for (uint64_t i = 0; i < ncols_; ++i)
+    for (uint64_t j = 0; j < nrows_; ++j)
+      temp.vals_[i + j * ncols_] = vals_[j + i * nrows_];
   return temp;
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::dagger() const {
   Matrix<T> temp(ncols_, nrows_);
-  for (size_t i = 0; i < temp.get_nrows(); ++i)
-    for (size_t j = 0; j < temp.get_ncols(); ++j)
-      temp(i, j) = std::conj(vals_[j + i * nrows_]);
+  for (uint64_t i = 0; i < ncols_; ++i)
+    for (uint64_t j = 0; j < nrows_; ++j)
+      temp.vals_[i + j * ncols_] = std::conj(vals_[j + i * nrows_]);
   return temp;
 }
 
 template <typename T>
 Matrix<T> Matrix<T>::conjugate() const {
   Matrix<T> temp(nrows_, ncols_);
-  for (size_t i = 0; i < temp.get_nrows(); ++i)
-    for (size_t j = 0; j < temp.get_ncols(); ++j)
-      temp(i, j) = std::conj(vals_[i + j * nrows_]);
+  for (uint64_t i = 0; i < nrows_; ++i)
+    for (uint64_t j = 0; j < ncols_; ++j)
+      temp.vals_[i + j * nrows_] = std::conj(vals_[i + j * nrows_]);
   return temp;
 }
 
 template <class T>
 Matrix<T> Matrix<T>::tensor_times(const Matrix<T> & A) const {
-  Matrix<T> C(nrows_ * A.get_nrows(), ncols_ * A.get_ncols());
-  for (size_t q = 0; q < A.get_ncols(); ++q)
-    for (size_t j = 0; j < ncols_; ++j)
-      for (size_t i = 0; i < nrows_; ++i)
-        for (size_t p = 0; p < A.get_nrows(); ++p) {
-          size_t n = i * A.get_nrows() + p;
-          size_t m = j * A.get_ncols() + q;
+  Matrix<T> C(nrows_ * A.nrows_, ncols_ * A.ncols_);
+  for (uint64_t q = 0; q < A.ncols_; ++q)
+    for (uint64_t j = 0; j < ncols_; ++j)
+      for (uint64_t i = 0; i < nrows_; ++i)
+        for (uint64_t p = 0; p < A.nrows_; ++p) {
+          uint64_t n = i * A.nrows_ + p;
+          uint64_t m = j * A.ncols_ + q;
           C(n, m) = vals_[i + j * nrows_] * A(p, q);
         }
   return C;
 }
 
 template <typename T>
-size_t Matrix<T>::get_ncols() const { return ncols_; }
+uint64_t Matrix<T>::ncols() const { return ncols_; }
 
 template <typename T>
-size_t Matrix<T>::get_nrows() const { return nrows_; }
+uint64_t Matrix<T>::nrows() const { return nrows_; }
 
 template <typename T>
-std::vector<T> Matrix<T>::get_vals() const { return vals_; }
+std::vector<T> Matrix<T>::vals() const { return vals_; }
+
+template <typename T>
+uint64_t Matrix<T>::size() const {
+  return static_cast<uint64_t>(vals_.size());
+}
 
 template <typename T1>
 std::ostream& operator<<(std::ostream& out, const Matrix<T1>& A) {
-  for (size_t i = 0; i < A.nrows_; ++i) {
-    for (size_t j = 0; j < A.ncols_; ++j)
+  for (uint64_t i = 0; i < A.nrows_; ++i) {
+    for (uint64_t j = 0; j < A.ncols_; ++j)
       out << A.vals_[i + j * A.nrows_] << "\t";
     out << "\n";
   }
@@ -279,8 +287,8 @@ std::ostream& operator<<(std::ostream& out, const Matrix<T1>& A) {
 
 template <typename T>
 std::istream& operator>>(std::istream& in, const Matrix<T>& A) {
-  for (size_t j = 0; j < A.ncols_; ++j)
-    for (size_t i = 0; i < A.nrows_; ++i)
+  for (uint64_t j = 0; j < A.ncols_; ++j)
+    for (uint64_t i = 0; i < A.nrows_; ++i)
       in >> A.vals_[i + j * A.nrows_];
   return in;
 }
@@ -302,8 +310,8 @@ std::vector<T2> operator*(const Matrix<T1>& A, const std::vector<T2>& b) {
   Expects(A.ncols_ == b.size());
 
   std::vector<T2> res(A.nrows_);
-  for (size_t j = 0; j < A.ncols_; ++j)
-    for (size_t i = 0; i < A.nrows_; ++i)
+  for (uint64_t j = 0; j < A.ncols_; ++j)
+    for (uint64_t i = 0; i < A.nrows_; ++i)
       res[i] += A.vals_[i + j * A.nrows_] * b[j];
   return res;
 }
@@ -313,8 +321,8 @@ std::vector<T1> operator*(const std::vector<T1>& b, const Matrix<T2>& A) {
   Expects(A.nrows_ == b.size());
 
   std::vector<T1> res(A.ncols_);
-  for (size_t j = 0; j < A.ncols_; ++j)
-    for (size_t i = 0; i < A.nrows_; ++i)
+  for (uint64_t j = 0; j < A.ncols_; ++j)
+    for (uint64_t i = 0; i < A.nrows_; ++i)
       res[j] += b[i] * A.vals_[i + j * A.nrows_];
   return res;
 }
@@ -325,9 +333,9 @@ Matrix<T1> operator*(const Matrix<T1>& A, const Matrix<T1>& B) {
 
   Matrix<T1> C(A.nrows_, B.ncols_);
   // column-major order: A(i, j) = A.val[i + j * nrows_]
-  for(size_t j = 0; j < B.ncols_; ++j)
-    for(size_t k = 0; k < A.ncols_; ++k)
-      for(size_t i = 0; i < A.nrows_; ++i)
+  for(uint64_t j = 0; j < B.ncols_; ++j)
+    for(uint64_t k = 0; k < A.ncols_; ++k)
+      for(uint64_t i = 0; i < A.nrows_; ++i)
         C(i, j) += A(i, k) * B(k, j);
 
   return C;
