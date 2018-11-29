@@ -20,23 +20,22 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef QENGINE_INCLUDE_IREG_H_
-#define QENGINE_INCLUDE_IREG_H_
+#include <gtest/gtest.h>
 
-#include <cstdint>
+#include "creg.h"
+#include "types.h"
 
-namespace qengine {
-inline namespace state {
+class CRegTests : public ::testing::Test {};
 
-template <typename T>
-class IReg {
-public:
-  virtual ~IReg<T>() = default;
+TEST_F(CRegTests, simple_1) {
+  qengine::CReg<double> reg(3);
 
-  virtual uint64_t size() const = 0;
-};
+  EXPECT_EQ(reg.vals(), qengine::RVec<double>({0.0, 0.0, 0.0}));
+}
 
-} // namespace state
-} // namespace qengine
+TEST_F(CRegTests, simple_2) {
+  qengine::CReg<double> reg(3);
+  reg[0] = 1.0;
 
-#endif // QENGINE_INCLUDE_IREG_H_
+  EXPECT_EQ(reg.vals(), qengine::RVec<double>({1.0, 0.0, 0.0}));
+}

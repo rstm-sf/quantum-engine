@@ -22,34 +22,34 @@
 
 #include <gtest/gtest.h>
 
-#include "qudit.h"
+#include "qreg.h"
 #include "types.h"
 
-class QuditTests : public ::testing::Test {};
+class QRegTests : public ::testing::Test {};
 
-TEST_F(QuditTests, probabilities) {
-  qengine::Qudit<double> qudit(3);
+TEST_F(QRegTests, probabilities) {
+  qengine::QReg<double> qudit(3);
 
   EXPECT_EQ(qudit.probabilities(), qengine::RVec<double>({1.0, 0.0, 0.0}));
 }
 
-TEST_F(QuditTests, conjugate) {
-  qengine::Qudit<double> a(2);
-  qengine::Qudit<double> b(2);
+TEST_F(QRegTests, conjugate) {
+  qengine::QReg<double> a(2);
+  qengine::QReg<double> b(2);
 
-  EXPECT_EQ(a.conjugate(), b);
+  EXPECT_EQ(a.conjugate().probabilities(), b.probabilities());
 }
 
-TEST_F(QuditTests, braket) {
-  qengine::Qudit<double> a(2);
-  qengine::Qudit<double> b(2);
+TEST_F(QRegTests, braket) {
+  qengine::QReg<double> a(2);
+  qengine::QReg<double> b(2);
 
   EXPECT_EQ(b.braket_product(a), 1.0);
 }
 
-TEST_F(QuditTests, ketbra) {
-  qengine::Qudit<double> a(2);
-  qengine::Qudit<double> b(2);
+TEST_F(QRegTests, ketbra) {
+  qengine::QReg<double> a(2);
+  qengine::QReg<double> b(2);
   qengine::CMat<double> M(2, {1.0, 0.0, 0.0, 0.0});
 
   EXPECT_EQ(a.ketbra_product(b), M);

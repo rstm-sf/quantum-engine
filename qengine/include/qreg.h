@@ -20,8 +20,8 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef QENGINE_INCLUDE_QUDIT_H_
-#define QENGINE_INCLUDE_QUDIT_H_
+#ifndef QENGINE_INCLUDE_QREG_H_
+#define QENGINE_INCLUDE_QREG_H_
 
 #include "ireg.h"
 #include "math_operations.h"
@@ -31,71 +31,65 @@ namespace qengine {
 inline namespace qstate {
 
 template <typename T>
-class Qudit : public IReg<T> {
+class QReg : public IReg<T> {
 public:
-  Qudit<T>();
-  ~Qudit<T>();
-  Qudit<T>(const Qudit<T>&);
-  Qudit<T>(Qudit<T>&&);
-  Qudit<T>& operator=(const Qudit<T>&);
-  Qudit<T>& operator=(Qudit<T>&&);
+  QReg<T>();
+  virtual ~QReg<T>();
+  QReg<T>(const QReg<T>&);
+  QReg<T>(QReg<T>&&);
+  QReg<T>& operator=(const QReg<T>&);
+  QReg<T>& operator=(QReg<T>&&);
 
-  Qudit<T>(uint64_t dim);
+  QReg<T>(uint64_t sdim, uint64_t size = 1);
 
-  virtual uint64_t dim() const;
-  virtual uint64_t sdim() const;
-  virtual uint64_t nstates() const;
+  virtual uint64_t size() const override;
 
-  virtual RVec<T> probabilities() const;
+  virtual void apply(const CMat<T> mat, uint64_t idx_qudit = 0);
 
-  Qudit<T> conjugate() const;
-  Cmplx<T> braket_product(const Qudit<T>& ket) const;
-  CMat<T> ketbra_product(const Qudit<T>& ket) const;
+  uint64_t dim() const;
+  uint64_t sdim() const;
 
-  template <typename S>
-  friend bool operator==(const Qudit<S>& a, const Qudit<S>& b);
+  RVec<T> probabilities() const;
 
-  template <typename S>
-  friend bool operator!=(const Qudit<S>& a, const Qudit<S>& b);
+  QReg<T> conjugate() const;
+  Cmplx<T> braket_product(const QReg<T>& ket) const;
+  CMat<T> ketbra_product(const QReg<T>& ket) const;
 
 private:
+  uint64_t sdim_;
+  uint64_t size_;
   CVec<T> amplitudes_;
 };
 
 template <typename T>
-Qudit<T>::Qudit() = default;
+QReg<T>::QReg() = default;
 
 template <typename T>
-Qudit<T>::~Qudit() = default;
+QReg<T>::~QReg() = default;
 
 template <typename T>
-Qudit<T>::Qudit(const Qudit<T>&) = default;
+QReg<T>::QReg(const QReg<T>&) = default;
 
 template <typename T>
-Qudit<T>::Qudit(Qudit<T>&&) = default;
+QReg<T>::QReg(QReg<T>&&) = default;
 
 template <typename T>
-Qudit<T>& Qudit<T>::operator=(const Qudit<T>&) = default;
+QReg<T>& QReg<T>::operator=(const QReg<T>&) = default;
 
 template <typename T>
-Qudit<T>& Qudit<T>::operator=(Qudit<T>&&) = default;
+QReg<T>& QReg<T>::operator=(QReg<T>&&) = default;
 
 template <typename T>
-Qudit<T>::Qudit(uint64_t dim) : amplitudes_(dim) {
+QReg<T>::QReg(uint64_t sdim, uint64_t size)
+  : sdim_{sdim}, size_{size}, amplitudes_(sdim * size) {
   amplitudes_[0] = 1.0;
 }
 
 template <typename T>
-uint64_t Qudit<T>::dim() const { return amplitudes_.size(); }
+uint64_t QReg<T>::size() const { return size_; }
 
 template <typename T>
-uint64_t Qudit<T>::sdim() const { return amplitudes_.size(); }
-
-template <typename T>
-uint64_t Qudit<T>::nstates() const { return 1; }
-
-template <typename T>
-RVec<T> Qudit<T>::probabilities() const {
+RVec<T> QReg<T>::probabilities() const {
   RVec<T> res;
   res.reserve(amplitudes_.size());
   for(auto const & a : amplitudes_)
@@ -104,16 +98,27 @@ RVec<T> Qudit<T>::probabilities() const {
 }
 
 template <typename T>
-Qudit<T> Qudit<T>::conjugate() const {
-  Qudit<T> res(*this);
+uint64_t QReg<T>::dim() const { return amplitudes_.size(); }
+
+template <typename T>
+uint64_t QReg<T>::sdim() const { return sdim_; }
+
+template <typename T>
+void QReg<T>::apply(const CMat<T> mat, uint64_t idx_qudit) {
+  amplitudes_ = mat * amplitudes_;
+}
+
+template <typename T>
+QReg<T> QReg<T>::conjugate() const {
+  QReg<T> res(*this);
   for (auto & res_a : res.amplitudes_)
     res_a = std::conj(res_a);
   return res;
 }
 
 template <typename T>
-Cmplx<T> Qudit<T>::braket_product(const Qudit<T>& ket) const {
-  Expects(ket.sdim() == this->sdim());
+Cmplx<T> QReg<T>::braket_product(const QReg<T>& ket) const {
+  Expects(ket.amplitudes_.size() == amplitudes_.size());
 
   Cmplx<T> res(0.0);
   for(uint64_t i = 0; i < amplitudes_.size(); ++i)
@@ -122,19 +127,11 @@ Cmplx<T> Qudit<T>::braket_product(const Qudit<T>& ket) const {
 }
 
 template <typename T>
-CMat<T> Qudit<T>::ketbra_product(const Qudit<T>& bra) const {
+CMat<T> QReg<T>::ketbra_product(const QReg<T>& bra) const {
   return ketbra_tensor_product(amplitudes_, bra.amplitudes_);
 }
-
-template <typename S>
-bool operator==(const Qudit<S>& a, const Qudit<S>& b) {
-  return a.amplitudes_ == b.amplitudes_;
-}
-
-template <typename S>
-bool operator!=(const Qudit<S>& a, const Qudit<S>& b) { return !(a == b); }
 
 } // namespace qstate
 } // namespace qengine
 
-#endif // QENGINE_INCLUDE_QUDIT_H_
+#endif // QENGINE_INCLUDE_QREG_H_
