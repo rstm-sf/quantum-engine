@@ -28,14 +28,14 @@
 class CRegTests : public ::testing::Test {};
 
 TEST_F(CRegTests, simple_1) {
-  qengine::CReg<double> reg(3);
+  qengine::CReg reg(3);
 
-  EXPECT_EQ(reg.vals(), qengine::RVec<double>({0.0, 0.0, 0.0}));
+  EXPECT_EQ(reg.vals(), qengine::RVec<uint16_t>({0, 0, 0}));
 }
 
 TEST_F(CRegTests, simple_2) {
-  qengine::CReg<double> reg(3);
-  reg[0] = 1.0;
+  qengine::CReg reg(3);
+  reg[0] = 1;
 
-  EXPECT_EQ(reg.vals(), qengine::RVec<double>({1.0, 0.0, 0.0}));
+  EXPECT_EQ(reg.vals(), qengine::RVec<uint16_t>({1, 0, 0}));
 }

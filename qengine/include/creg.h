@@ -29,7 +29,7 @@
 namespace qengine {
 inline namespace cstate {
 
-template <typename T>
+template <typename T = uint16_t>
 class CReg : public IReg<T> {
 public:
   CReg<T>();
