@@ -32,6 +32,8 @@
 namespace qengine {
 inline namespace type {
 
+using CReg = uint16_t;
+
 template <typename T>
 using RVec = std::vector<T>;
 template <typename T>
