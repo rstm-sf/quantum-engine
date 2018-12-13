@@ -44,6 +44,7 @@ public:
 
   virtual uint64_t size() const override;
 
+  virtual void apply(const RMat<T> mat, uint64_t idx_qudit = 0);
   virtual void apply(const CMat<T> mat, uint64_t idx_qudit = 0);
 
   uint64_t dim() const;
@@ -102,6 +103,11 @@ uint64_t QReg<T>::dim() const { return amplitudes_.size(); }
 
 template <typename T>
 uint64_t QReg<T>::sdim() const { return sdim_; }
+
+template <typename T>
+void QReg<T>::apply(const RMat<T> mat, uint64_t idx_qudit) {
+  amplitudes_ = mat * amplitudes_;
+}
 
 template <typename T>
 void QReg<T>::apply(const CMat<T> mat, uint64_t idx_qudit) {

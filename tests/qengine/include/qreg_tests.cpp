@@ -54,3 +54,14 @@ TEST_F(QRegTests, ketbra) {
 
   EXPECT_EQ(a.ketbra_product(b), M);
 }
+
+TEST_F(QRegTests, apply) {
+  qengine::QReg<double> a(3);
+  qengine::CMat<double> M(3, { 0.0, 0.0, 1.0,
+                               0.0, 1.0, 0.0,
+                               1.0, 0.0, 0.0 });
+  std::vector<double> probs({0.0, 0.0, 1.0});
+  a.apply(M);
+
+  EXPECT_EQ(a.probabilities(), probs);
+}
