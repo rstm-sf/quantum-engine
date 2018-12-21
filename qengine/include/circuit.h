@@ -52,6 +52,8 @@ public:
   void apply(uint64_t idx_qreg, RMat<T>);
   void apply(uint64_t idx_qreg, CMat<T>);
 
+  void applyX(uint64_t idx_qreg, uint64_t x = 1);
+
   void measure(uint64_t idx_qreg, uint64_t idx_creg);
 
 protected:
@@ -81,6 +83,11 @@ void Circuit<T>::apply(uint64_t idx_qreg, RMat<T> mat_op) {
 template <typename T>
 void Circuit<T>::apply(uint64_t idx_qreg, CMat<T> mat_op) {
   qregs_[idx_qreg].apply(mat_op);
+}
+
+template <typename T>
+void Circuit<T>::applyX(uint64_t idx_qreg, uint64_t x) {
+  qregs_[idx_qreg].applyX(x);
 }
 
 template <typename T>

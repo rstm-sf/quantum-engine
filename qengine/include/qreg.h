@@ -47,6 +47,8 @@ public:
   virtual void apply(const RMat<T> mat, uint64_t idx_qudit = 0);
   virtual void apply(const CMat<T> mat, uint64_t idx_qudit = 0);
 
+  void applyX(uint64_t x = 1);
+
   uint64_t dim() const;
   uint64_t sdim() const;
 
@@ -112,6 +114,16 @@ void QReg<T>::apply(const RMat<T> mat, uint64_t idx_qudit) {
 template <typename T>
 void QReg<T>::apply(const CMat<T> mat, uint64_t idx_qudit) {
   amplitudes_ = mat * amplitudes_;
+}
+
+template <typename T>
+void QReg<T>::applyX(uint64_t x) {
+  CVec<T> new_amplitudes;
+  new_amplitudes.reserve(sdim_);
+  for (uint64_t i = 0; i < sdim_; ++i)
+    new_amplitudes.push_back(amplitudes_[(x + i) % sdim_]);
+
+  amplitudes_ = std::move(new_amplitudes);
 }
 
 template <typename T>

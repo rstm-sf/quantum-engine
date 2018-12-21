@@ -65,3 +65,11 @@ TEST_F(QRegTests, apply) {
 
   EXPECT_EQ(a.probabilities(), probs);
 }
+
+TEST_F(QRegTests, applyX) {
+  qengine::QReg<double> a(3);
+  std::vector<double> probs({0.0, 0.0, 1.0});
+  a.applyX();
+
+  EXPECT_EQ(a.probabilities(), probs);
+}

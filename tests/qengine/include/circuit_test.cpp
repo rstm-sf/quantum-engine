@@ -53,3 +53,14 @@ TEST_F(CircuitTests, measure) {
 
   EXPECT_EQ(circuit.cregs()[0], 2);
 }
+
+TEST_F(CircuitTests, applyX) {
+  uint64_t nreg = 2;
+  uint64_t dim = 3;
+  qengine::Circuit<double> circuit(nreg, dim);
+
+  circuit.applyX(0);
+  circuit.measure(0, 0);
+
+  EXPECT_EQ(circuit.cregs()[0], 2);
+}
