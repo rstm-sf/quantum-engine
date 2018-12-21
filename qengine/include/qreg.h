@@ -23,6 +23,9 @@
 #ifndef QENGINE_INCLUDE_QREG_H_
 #define QENGINE_INCLUDE_QREG_H_
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "ireg.h"
 #include "math_operations.h"
 #include "types.h"
@@ -48,6 +51,7 @@ public:
   virtual void apply(const CMat<T> mat, uint64_t idx_qudit = 0);
 
   void applyX(uint64_t x = 1);
+  void applyZ(uint64_t z = 1);
 
   uint64_t dim() const;
   uint64_t sdim() const;
@@ -124,6 +128,15 @@ void QReg<T>::applyX(uint64_t x) {
     new_amplitudes.push_back(amplitudes_[(x + i) % sdim_]);
 
   amplitudes_ = std::move(new_amplitudes);
+}
+
+template <typename T>
+void QReg<T>::applyZ(uint64_t z) {
+  if (sdim_ == 0) return;
+  T p = 2.0 * M_PI * static_cast<T>(z) / static_cast<T>(sdim_);
+  // TODO: sin и cos приближенно считают
+  for (uint64_t i = 1; i < sdim_; ++i)
+    amplitudes_[i] *= Cmplx<T>(std::cos(p * i), std::sin(p * i));
 }
 
 template <typename T>

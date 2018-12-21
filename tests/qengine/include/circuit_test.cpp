@@ -64,3 +64,16 @@ TEST_F(CircuitTests, applyX) {
 
   EXPECT_EQ(circuit.cregs()[0], 2);
 }
+
+TEST_F(CircuitTests, applyZ) {
+  uint64_t nreg = 2;
+  uint64_t dim = 2;
+  qengine::Circuit<double> circuit(nreg, dim);
+
+  circuit.applyX(0);
+  circuit.applyZ(0);
+
+  EXPECT_EQ(
+    circuit.qregs()[0].probabilities(),
+    std::vector<double>({0.0, 1.0}));
+}
