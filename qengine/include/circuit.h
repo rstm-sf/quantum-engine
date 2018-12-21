@@ -54,7 +54,7 @@ public:
 
   void measure(uint64_t idx_qreg, uint64_t idx_creg);
 
-private:
+protected:
   std::vector<QReg<T>> qregs_;
   std::vector<CReg> cregs_;
   RandNumEngine rand_eng_;
