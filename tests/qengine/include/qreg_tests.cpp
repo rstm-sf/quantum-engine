@@ -83,3 +83,53 @@ TEST_F(QRegTests, applyZ) {
 
   EXPECT_EQ(a.probabilities(), probs);
 }
+
+TEST_F(QRegTests, applyF_0) {
+  qengine::QReg<double> a(2);
+  std::vector<double> probs({.5, .5});
+  bool has_fail = false;
+
+  a.applyF();
+
+  for (std::size_t i = 0; i < 2; ++i)
+    if (a.probabilities()[i] - probs[i] > 1.0e-5) {
+      has_fail = true;
+      break;
+    }
+
+  EXPECT_TRUE(has_fail == false);
+}
+
+TEST_F(QRegTests, applyF_1) {
+  qengine::QReg<double> a(2);
+  std::vector<double> probs({.5, .5});
+  bool has_fail = false;
+
+  a.applyX();
+  a.applyF();
+
+  for (std::size_t i = 0; i < 2; ++i)
+    if (a.probabilities()[i] - probs[i] > 1.0e-5) {
+      has_fail = true;
+      break;
+    }
+
+  EXPECT_TRUE(has_fail == false);
+}
+
+TEST_F(QRegTests, applyF_1_F) {
+  qengine::QReg<double> a(2);
+  std::vector<double> probs({1.0, 0.0});
+  bool has_fail = false;
+
+  a.applyF();
+  a.applyF();
+
+  for (std::size_t i = 0; i < 2; ++i)
+    if (a.probabilities()[i] - probs[i] > 1.0e-5) {
+      has_fail = true;
+      break;
+    }
+
+  EXPECT_TRUE(has_fail == false);
+}
