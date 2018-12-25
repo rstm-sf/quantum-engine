@@ -53,6 +53,7 @@ public:
   void applyX(uint64_t x = 1);
   void applyZ(uint64_t z = 1);
   void applyF();
+  void applyFconjugate();
 
   uint64_t dim() const;
   uint64_t sdim() const;
@@ -149,9 +150,30 @@ void QReg<T>::applyF() {
   // TODO: sin и cos приближенно считают
   new_amplitudes[0] = static_cast<T>(1.0) * sqrt_d_inv;
   for (uint64_t i = 1; i < sdim_; ++i) {
+    new_amplitudes[i] += amplitudes_[0];
     for (uint64_t j = 1; j < sdim_; ++j)
-      new_amplitudes[i] += 
+      new_amplitudes[i] +=
         amplitudes_[j] * Cmplx<T>(std::cos(p * i * j), std::sin(p * i * j));
+    new_amplitudes[i] *= sqrt_d_inv;
+  }
+
+  amplitudes_ = std::move(new_amplitudes);
+}
+
+template <typename T>
+void QReg<T>::applyFconjugate() {
+  if (sdim_ == 0) return;
+  CVec<T> new_amplitudes(sdim_);
+  const T p = 2.0 * M_PI / static_cast<T>(sdim_);
+  const T sqrt_d_inv = static_cast<T>(1.0) / std::sqrt(sdim_);
+  // TODO: sin и cos приближенно считают
+  new_amplitudes[0] = static_cast<T>(1.0) * sqrt_d_inv;
+  for (uint64_t i = sdim_ - 1; i > 0; --i) {
+    for (uint64_t j = sdim_ - 1; j > 0; --j) {
+      new_amplitudes[i] +=
+        amplitudes_[j] * Cmplx<T>(std::cos(p * i * j), -std::sin(p * i * j));
+    }
+    new_amplitudes[i] += amplitudes_[0];
     new_amplitudes[i] *= sqrt_d_inv;
   }
 

@@ -133,3 +133,21 @@ TEST_F(QRegTests, applyF_1_F) {
 
   EXPECT_TRUE(has_fail == false);
 }
+
+TEST_F(QRegTests, applyF_1_F_dim4) {
+  std::size_t dim = 4;
+  qengine::QReg<double> a(dim);
+  std::vector<double> probs({1.0, 0.0, 0.0, 0.0});
+  bool has_fail = false;
+
+  a.applyF();
+  a.applyFconjugate();
+
+  for (std::size_t i = 0; i < dim; ++i)
+    if (a.probabilities()[i] - probs[i] > 1.0e-5) {
+      has_fail = true;
+      break;
+    }
+
+  EXPECT_TRUE(has_fail == false);
+}

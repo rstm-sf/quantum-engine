@@ -82,13 +82,32 @@ TEST_F(CircuitTests, applyF_1_F) {
   uint64_t nreg = 2;
   uint64_t dim = 2;
   qengine::Circuit<double> circuit(nreg, dim);
-  std::vector<double> probs = std::vector<double>({1.0, 0.0});
+  std::vector<double> probs({1.0, 0.0, 0.0, 0.0});
   bool has_fail = false;
 
   circuit.applyF(0);
   circuit.applyF(0);
 
   for (std::size_t i = 0; i < 2; ++i)
+    if (circuit.qregs()[0].probabilities()[i] - probs[i] > 1.0e-5) {
+      has_fail = true;
+      break;
+    }
+
+  EXPECT_TRUE(has_fail == false);
+}
+
+TEST_F(CircuitTests, applyF_1_F_dim4) {
+  uint64_t nreg = 2;
+  uint64_t dim = 4;
+  qengine::Circuit<double> circuit(nreg, dim);
+  std::vector<double> probs({1.0, 0.0, 0.0, 0.0});
+  bool has_fail = false;
+
+  circuit.applyF(0);
+  circuit.applyFconjugate(0);
+
+  for (std::size_t i = 0; i < dim; ++i)
     if (circuit.qregs()[0].probabilities()[i] - probs[i] > 1.0e-5) {
       has_fail = true;
       break;
