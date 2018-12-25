@@ -4,6 +4,7 @@ project(quantum-engine)
 
 add_subdirectory(third_party/gsl)
 add_subdirectory(qengine)
+add_subdirectory(examples)
 
 #############################################
 # Unit tests
