@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <numeric>
 #include <vector>
 
 #include "circuit.h"
@@ -30,12 +31,15 @@
 
 int main(int argc, char const *argv[]) {
   uint64_t n = 8;
-  float epsilon = 0.4f;
-  uint64_t dim = 32;
+  float epsilon = 0.2f;
+  const uint64_t dim = std::llround(n / (epsilon * epsilon));
 
-  std::vector<uint64_t> K({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
-  uint64_t word_a = 16;
-  uint64_t word_b = 16;
+  std::vector<uint64_t> K;
+  K.reserve(dim);
+  for (auto i = 0ULL; i < dim; ++i)
+    K.push_back(i);
+  uint64_t word_a = 13;
+  uint64_t word_b = 13;
 
   uint64_t nreg = 1;
   qengine::Circuit<double> circuit(nreg, dim);
@@ -63,9 +67,9 @@ int main(int argc, char const *argv[]) {
   circuit.applyFconjugate(0);
   circuit.measure(0, 0);
 
-  auto creg = circuit.cregs();
+  auto cregs = circuit.cregs();
 
-  if (creg[0] == 0LL) {
+  if (cregs[0] == 0LL) {
     std::cout << "\nTEST PASSED" << std::endl;
   } else {
     std::cout << "\nTEST FAIL" << std::endl;
