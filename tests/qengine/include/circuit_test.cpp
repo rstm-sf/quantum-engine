@@ -59,59 +59,9 @@ TEST_F(CircuitTests, applyX) {
   uint64_t dim = 3;
   qengine::Circuit<double> circuit(nreg, dim);
 
-  circuit.applyX(0);
+  circuit.applyX(0, 1, qengine::Cmplx<double>(0.0), qengine::Cmplx<double>(1.0));
+  circuit.applyX(0, 2, qengine::Cmplx<double>(0.0), qengine::Cmplx<double>(1.0));
   circuit.measure(0, 0);
 
   EXPECT_EQ(circuit.cregs()[0], 2);
-}
-
-TEST_F(CircuitTests, applyZ) {
-  uint64_t nreg = 2;
-  uint64_t dim = 2;
-  qengine::Circuit<double> circuit(nreg, dim);
-
-  circuit.applyX(0);
-  circuit.applyZ(0);
-
-  EXPECT_EQ(
-    circuit.qregs()[0].probabilities(),
-    std::vector<double>({0.0, 1.0}));
-}
-
-TEST_F(CircuitTests, applyF_1_F) {
-  uint64_t nreg = 2;
-  uint64_t dim = 2;
-  qengine::Circuit<double> circuit(nreg, dim);
-  std::vector<double> probs({1.0, 0.0, 0.0, 0.0});
-  bool has_fail = false;
-
-  circuit.applyF(0);
-  circuit.applyF(0);
-
-  for (std::size_t i = 0; i < 2; ++i)
-    if (circuit.qregs()[0].probabilities()[i] - probs[i] > 1.0e-5) {
-      has_fail = true;
-      break;
-    }
-
-  EXPECT_TRUE(has_fail == false);
-}
-
-TEST_F(CircuitTests, applyF_1_F_dim4) {
-  uint64_t nreg = 2;
-  uint64_t dim = 4;
-  qengine::Circuit<double> circuit(nreg, dim);
-  std::vector<double> probs({1.0, 0.0, 0.0, 0.0});
-  bool has_fail = false;
-
-  circuit.applyF(0);
-  circuit.applyFconjugate(0);
-
-  for (std::size_t i = 0; i < dim; ++i)
-    if (circuit.qregs()[0].probabilities()[i] - probs[i] > 1.0e-5) {
-      has_fail = true;
-      break;
-    }
-
-  EXPECT_TRUE(has_fail == false);
 }

@@ -52,10 +52,12 @@ public:
   void apply(uint64_t idx_qreg, RMat<T>);
   void apply(uint64_t idx_qreg, CMat<T>);
 
-  void applyX(uint64_t idx_qreg, uint64_t x = 1);
-  void applyZ(uint64_t idx_qreg, uint64_t z = 1);
-  void applyF(uint64_t idx_qreg);
-  void applyFconjugate(uint64_t idx_qreg);
+  void applyX(uint64_t idx_qreg, uint64_t i, T x, T y);
+  void applyX(uint64_t idx_qreg, uint64_t i, Cmplx<T> x, Cmplx<T> y);
+  void applyZ(uint64_t idx_qreg, uint64_t i, double tau);
+  void applyXconjugate(uint64_t idx_qreg, uint64_t i, T x, T y);
+  void applyXconjugate(uint64_t idx_qreg, uint64_t i, Cmplx<T> x, Cmplx<T> y);
+  void applyZconjugate(uint64_t idx_qreg, uint64_t i, double tau);
 
   void measure(uint64_t idx_qreg, uint64_t idx_creg);
 
@@ -89,23 +91,35 @@ void Circuit<T>::apply(uint64_t idx_qreg, CMat<T> mat_op) {
 }
 
 template <typename T>
-void Circuit<T>::applyX(uint64_t idx_qreg, uint64_t x) {
-  qregs_[idx_qreg].applyX(x);
+void Circuit<T>::applyX(uint64_t idx_qreg, uint64_t i, T x, T y) {
+  qregs_[idx_qreg].applyX(i, x, y);
 }
 
 template <typename T>
-void Circuit<T>::applyZ(uint64_t idx_qreg, uint64_t z) {
-  qregs_[idx_qreg].applyZ(z);
+void Circuit<T>::applyX(uint64_t idx_qreg, uint64_t i, Cmplx<T> x, Cmplx<T> y) {
+  qregs_[idx_qreg].applyX(i, x, y);
 }
 
 template <typename T>
-void Circuit<T>::applyF(uint64_t idx_qreg) {
-  qregs_[idx_qreg].applyF();
+void Circuit<T>::applyZ(uint64_t idx_qreg, uint64_t i, double tau) {
+  qregs_[idx_qreg].applyZ(i, tau);
 }
 
 template <typename T>
-void Circuit<T>::applyFconjugate(uint64_t idx_qreg) {
-  qregs_[idx_qreg].applyFconjugate();
+void Circuit<T>::applyXconjugate(
+    uint64_t idx_qreg, uint64_t i, T x, T y) {
+  qregs_[idx_qreg].applyXconjugate(i, x, y);
+}
+
+template <typename T>
+void Circuit<T>::applyXconjugate(
+    uint64_t idx_qreg, uint64_t i, Cmplx<T> x, Cmplx<T> y) {
+  qregs_[idx_qreg].applyXconjugate(i, x, y);
+}
+
+template <typename T>
+void Circuit<T>::applyZconjugate(uint64_t idx_qreg, uint64_t i, double tau) {
+  qregs_[idx_qreg].applyZconjugate(i, tau);
 }
 
 template <typename T>

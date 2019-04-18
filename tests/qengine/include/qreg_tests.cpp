@@ -69,85 +69,8 @@ TEST_F(QRegTests, apply) {
 TEST_F(QRegTests, applyX) {
   qengine::QReg<double> a(3);
   std::vector<double> probs({0.0, 0.0, 1.0});
-  a.applyX();
+  a.applyX(1, qengine::Cmplx<double>(0.0), qengine::Cmplx<double>(1.0));
+  a.applyX(2, qengine::Cmplx<double>(0.0), qengine::Cmplx<double>(1.0));
 
   EXPECT_EQ(a.probabilities(), probs);
-}
-
-TEST_F(QRegTests, applyZ) {
-  qengine::QReg<double> a(2);
-  std::vector<double> probs({0.0, 1.0});
-
-  a.applyX();
-  a.applyZ();
-
-  EXPECT_EQ(a.probabilities(), probs);
-}
-
-TEST_F(QRegTests, applyF_0) {
-  qengine::QReg<double> a(2);
-  std::vector<double> probs({.5, .5});
-  bool has_fail = false;
-
-  a.applyF();
-
-  for (std::size_t i = 0; i < 2; ++i)
-    if (a.probabilities()[i] - probs[i] > 1.0e-5) {
-      has_fail = true;
-      break;
-    }
-
-  EXPECT_TRUE(has_fail == false);
-}
-
-TEST_F(QRegTests, applyF_1) {
-  qengine::QReg<double> a(2);
-  std::vector<double> probs({.5, .5});
-  bool has_fail = false;
-
-  a.applyX();
-  a.applyF();
-
-  for (std::size_t i = 0; i < 2; ++i)
-    if (a.probabilities()[i] - probs[i] > 1.0e-5) {
-      has_fail = true;
-      break;
-    }
-
-  EXPECT_TRUE(has_fail == false);
-}
-
-TEST_F(QRegTests, applyF_1_F) {
-  qengine::QReg<double> a(2);
-  std::vector<double> probs({1.0, 0.0});
-  bool has_fail = false;
-
-  a.applyF();
-  a.applyF();
-
-  for (std::size_t i = 0; i < 2; ++i)
-    if (a.probabilities()[i] - probs[i] > 1.0e-5) {
-      has_fail = true;
-      break;
-    }
-
-  EXPECT_TRUE(has_fail == false);
-}
-
-TEST_F(QRegTests, applyF_1_F_dim4) {
-  std::size_t dim = 4;
-  qengine::QReg<double> a(dim);
-  std::vector<double> probs({1.0, 0.0, 0.0, 0.0});
-  bool has_fail = false;
-
-  a.applyF();
-  a.applyFconjugate();
-
-  for (std::size_t i = 0; i < dim; ++i)
-    if (a.probabilities()[i] - probs[i] > 1.0e-5) {
-      has_fail = true;
-      break;
-    }
-
-  EXPECT_TRUE(has_fail == false);
 }

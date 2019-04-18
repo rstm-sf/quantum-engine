@@ -33,6 +33,8 @@
 #include "math_operations.h"
 #include "types.h"
 
+#include <gsl/gsl_assert>
+
 namespace qengine {
 inline namespace qstate {
 
@@ -53,10 +55,12 @@ public:
   virtual void apply(const RMat<T> mat, uint64_t idx_qudit = 0);
   virtual void apply(const CMat<T> mat, uint64_t idx_qudit = 0);
 
-  void applyX(uint64_t x = 1);
-  void applyZ(uint64_t z = 1);
-  void applyF();
-  void applyFconjugate();
+  void applyX(uint64_t i, T x, T y);
+  void applyX(uint64_t i, Cmplx<T> x, Cmplx<T> y);
+  void applyZ(uint64_t i, double tau);
+  void applyXconjugate(uint64_t i, T x, T y);
+  void applyXconjugate(uint64_t i, Cmplx<T> x, Cmplx<T> y);
+  void applyZconjugate(uint64_t i, double tau);
 
   uint64_t dim() const;
   uint64_t sdim() const;
@@ -126,56 +130,85 @@ void QReg<T>::apply(const CMat<T> mat, uint64_t idx_qudit) {
 }
 
 template <typename T>
-void QReg<T>::applyX(uint64_t x) {
-  CVec<T> new_amplitudes;
-  new_amplitudes.reserve(sdim_);
-  for (uint64_t i = 0; i < sdim_; ++i)
-    new_amplitudes.push_back(amplitudes_[(x + i) % sdim_]);
+void QReg<T>::applyX(uint64_t i, T x, T y) {
+  Expects(0 < i && i < sdim_);
 
-  amplitudes_ = std::move(new_amplitudes);
+  T x_11 = x;
+  T x_12 = -y;
+  T x_21 = y;
+  T x_22 = x;
+
+  T devisor_inv = 1.0 / std::sqrt(x * x + y * y);
+  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1] * devisor_inv;
+  Cmplx<T> amplitudes_i = amplitudes_[i] * devisor_inv;
+
+  amplitudes_[i - 1] = x_11 * amplitudes_i_1 + x_12 * amplitudes_i;
+  amplitudes_[i] = x_21 * amplitudes_i_1 + x_22 * amplitudes_i;
 }
 
 template <typename T>
-void QReg<T>::applyZ(uint64_t z) {
-  if (sdim_ == 0) return;
-  const T p = 2.0 * M_PI * static_cast<T>(z) / static_cast<T>(sdim_);
-  // TODO: sin и cos приближенно считают
-  for (uint64_t i = 1; i < sdim_; ++i)
-    amplitudes_[i] *= Cmplx<T>(std::cos(p * i), std::sin(p * i));
+void QReg<T>::applyX(uint64_t i, Cmplx<T> x, Cmplx<T> y) {
+  Expects(0 < i && i < sdim_);
+
+  Cmplx<T> x_11 = x;
+  Cmplx<T> x_12 = -y;
+  Cmplx<T> x_21 = std::conj(y);
+  Cmplx<T> x_22 = std::conj(x);
+
+  T devisor_inv = 1.0 / std::sqrt(
+    std::abs(x) * std::abs(x) + std::abs(y) * std::abs(y));
+  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1] * devisor_inv;
+  Cmplx<T> amplitudes_i = amplitudes_[i] * devisor_inv;
+
+  amplitudes_[i - 1] = x_11 * amplitudes_i_1 + x_12 * amplitudes_i;
+  amplitudes_[i] = x_21 * amplitudes_i_1 + x_22 * amplitudes_i;
 }
 
 template <typename T>
-void QReg<T>::applyF() {
-  if (sdim_ == 0) return;
-  CVec<T> new_amplitudes(sdim_);
-  const T p = 2.0 * M_PI / static_cast<T>(sdim_);
-  const T sqrt_d_inv = static_cast<T>(1.0) / std::sqrt(sdim_);
-  // TODO: sin и cos приближенно считают
-  for (uint64_t i = 0; i < sdim_; ++i) {
-    for (uint64_t j = 0; j < sdim_; ++j)
-      new_amplitudes[i] +=
-        amplitudes_[j] * Cmplx<T>(std::cos(p * i * j), std::sin(p * i * j));
-    new_amplitudes[i] *= sqrt_d_inv;
-  }
-
-  amplitudes_ = std::move(new_amplitudes);
+void QReg<T>::applyZ(uint64_t i, double tau) {
+  Expects(0 <= i && i < sdim_);
+  amplitudes_[i] *= Cmplx<T>(std::cos(tau), std::sin(tau));
 }
 
 template <typename T>
-void QReg<T>::applyFconjugate() {
-  if (sdim_ == 0) return;
-  CVec<T> new_amplitudes(sdim_);
-  const T p = 2.0 * M_PI / static_cast<T>(sdim_);
-  const T sqrt_d_inv = static_cast<T>(1.0) / std::sqrt(sdim_);
-  // TODO: sin и cos приближенно считают
-  for (uint64_t i = 0; i < sdim_; ++i) {
-      for (uint64_t j = 0; j < sdim_; ++j)
-        new_amplitudes[i] +=
-          amplitudes_[j] * Cmplx<T>(std::cos(p * i * j), -std::sin(p * i * j));
-      new_amplitudes[i] *= sqrt_d_inv;
-  }
+void QReg<T>::applyXconjugate(uint64_t i, T x, T y) {
+  Expects(0 < i && i < sdim_);
 
-  amplitudes_ = std::move(new_amplitudes);
+  Cmplx<T> x_11 = x;
+  Cmplx<T> x_12 = y;
+  Cmplx<T> x_21 = -y;
+  Cmplx<T> x_22 = x;
+
+  T devisor_inv =  1.0 / std::sqrt(x * x + y * y);
+  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1] * devisor_inv;
+  Cmplx<T> amplitudes_i = amplitudes_[i] * devisor_inv;
+
+  amplitudes_[i - 1] = x_11 * amplitudes_i_1 + x_12 * amplitudes_i;
+  amplitudes_[i] = x_21 * amplitudes_i_1 + x_22 * amplitudes_i;
+}
+
+template <typename T>
+void QReg<T>::applyXconjugate(uint64_t i, Cmplx<T> x, Cmplx<T> y) {
+  Expects(0 < i && i < sdim_);
+
+  Cmplx<T> x_11 = std::conj(x);
+  Cmplx<T> x_12 = y;
+  Cmplx<T> x_21 = -std::conj(y);
+  Cmplx<T> x_22 = x;
+
+  T devisor_inv = 1.0 / std::sqrt(
+    std::abs(x) * std::abs(x) + std::abs(y) * std::abs(y));
+  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1] * devisor_inv;
+  Cmplx<T> amplitudes_i = amplitudes_[i] * devisor_inv;
+
+  amplitudes_[i - 1] = x_11 * amplitudes_i_1 + x_12 * amplitudes_i;
+  amplitudes_[i] = x_21 * amplitudes_i_1 + x_22 * amplitudes_i;
+}
+
+template <typename T>
+void QReg<T>::applyZconjugate(uint64_t i, double tau) {
+  Expects(0 <= i && i < sdim_);
+  amplitudes_[i] *= Cmplx<T>(std::cos(tau), -std::sin(tau));
 }
 
 template <typename T>

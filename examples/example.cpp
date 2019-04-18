@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <functional>
 #include <numeric>
 #include <vector>
 
@@ -30,43 +31,60 @@
 #include "qreg.h"
 
 int main(int argc, char const *argv[]) {
-  uint64_t n = 8;
-  float epsilon = 0.2f;
+  const uint64_t n = 8;
+  const uint64_t q = 1 << n;
+  const auto epsilon = 0.2f;
   const uint64_t dim = std::llround(n / (epsilon * epsilon));
 
-  std::vector<uint64_t> K;
-  K.reserve(dim);
+  std::vector<uint64_t> k;
+  k.reserve(dim);
   for (auto i = 0ULL; i < dim; ++i)
-    K.push_back(i);
-  uint64_t word_a = 13;
-  uint64_t word_b = 13;
+    k.push_back(i);
+  const uint64_t word_a = 15;
+  const uint64_t word_b = 15;
 
-  uint64_t nreg = 1;
+  const uint64_t nreg = 1;
   qengine::Circuit<double> circuit(nreg, dim);
 
+  const auto applyF0 = [&dim, &circuit] (uint64_t idx) -> void {
+    auto d_inv = 1.0 / std::sqrt(dim);
+    for (uint64_t i = 1ULL; i < dim; ++i)
+    {
+      auto b = std::sqrt(1.0 - i * d_inv);
+      circuit.applyX(idx, i, d_inv, b);
+    }
+  };
+
+  const auto applyF0conjugate = [&dim, &circuit] (uint64_t idx) -> void {
+    auto d_inv = 1.0 / std::sqrt(dim);
+    for (uint64_t i = dim - 1; i > 0ULL; --i)
+    {
+      auto b = std::sqrt(1.0 - i * d_inv);
+      circuit.applyXconjugate(idx, i, d_inv, b);
+    }
+  };
+
   std::cout << "n   = " << n << "\n";
+  std::cout << "q   = " << q << "\n";
+  std::cout << "eps = " << epsilon << "\n";
   std::cout << "dim = " << dim << "\n";
   std::cout << "a   = " << word_a << "\n";
-  std::cout << "b   = " << word_b << "\n";
-  std::cout << "K   = {";
-  for (const auto& k : K)
-    std::cout << k << ", ";
-  std::cout << "}" << std::endl;
+  std::cout << "b   = " << word_b << std::endl;
 
   // Применение хеш-функции
   // Получаем состяние $\ket{\psi(a)}$
-  circuit.applyF(0);
-  for (const auto& k : K)
-    circuit.applyZ(0, word_a * k);
+  applyF0(0);
+  for (uint64_t i = 0; i < dim; ++i)
+    circuit.applyZ(0, i, static_cast<double>(word_a * k[i]) / n);
 
 
   // Reverse-тест
-  std::reverse(std::begin(K), std::end(K));
-  for (const auto& k : K)
-    circuit.applyZ(0, word_b * k);
-  circuit.applyFconjugate(0);
-  circuit.measure(0, 0);
+  for (uint64_t i = 0; i < dim; ++i)
+    circuit.applyZ(
+      0, dim - i - 1, static_cast<double>(word_b * k[dim - i - 1]) / n);
+  applyF0conjugate(0);
 
+  circuit.measure(0, 0);
   auto cregs = circuit.cregs();
 
   if (cregs[0] == 0LL) {
