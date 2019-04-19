@@ -138,12 +138,13 @@ void QReg<T>::applyX(uint64_t i, T x, T y) {
   T x_21 = y;
   T x_22 = x;
 
-  T devisor_inv = 1.0 / std::sqrt(x * x + y * y);
-  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1] * devisor_inv;
-  Cmplx<T> amplitudes_i = amplitudes_[i] * devisor_inv;
+  T devisor = std::sqrt(x * x + y * y);
 
-  amplitudes_[i - 1] = x_11 * amplitudes_i_1 + x_12 * amplitudes_i;
-  amplitudes_[i] = x_21 * amplitudes_i_1 + x_22 * amplitudes_i;
+  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1];
+  Cmplx<T> amplitudes_i = amplitudes_[i];
+
+  amplitudes_[i - 1] = (x_11 * amplitudes_i_1 + x_12 * amplitudes_i) / devisor;
+  amplitudes_[i] = (x_21 * amplitudes_i_1 + x_22 * amplitudes_i) / devisor;
 }
 
 template <typename T>
@@ -155,13 +156,13 @@ void QReg<T>::applyX(uint64_t i, Cmplx<T> x, Cmplx<T> y) {
   Cmplx<T> x_21 = std::conj(y);
   Cmplx<T> x_22 = std::conj(x);
 
-  T devisor_inv = 1.0 / std::sqrt(
-    std::abs(x) * std::abs(x) + std::abs(y) * std::abs(y));
-  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1] * devisor_inv;
-  Cmplx<T> amplitudes_i = amplitudes_[i] * devisor_inv;
+  T devisor = std::sqrt(std::abs(x) * std::abs(x) + std::abs(y) * std::abs(y));
 
-  amplitudes_[i - 1] = x_11 * amplitudes_i_1 + x_12 * amplitudes_i;
-  amplitudes_[i] = x_21 * amplitudes_i_1 + x_22 * amplitudes_i;
+  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1];
+  Cmplx<T> amplitudes_i = amplitudes_[i];
+
+  amplitudes_[i - 1] = (x_11 * amplitudes_i_1 + x_12 * amplitudes_i) / devisor;
+  amplitudes_[i] = (x_21 * amplitudes_i_1 + x_22 * amplitudes_i) / devisor;
 }
 
 template <typename T>
@@ -179,12 +180,13 @@ void QReg<T>::applyXconjugate(uint64_t i, T x, T y) {
   Cmplx<T> x_21 = -y;
   Cmplx<T> x_22 = x;
 
-  T devisor_inv =  1.0 / std::sqrt(x * x + y * y);
-  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1] * devisor_inv;
-  Cmplx<T> amplitudes_i = amplitudes_[i] * devisor_inv;
+  T devisor = std::sqrt(x * x + y * y);
 
-  amplitudes_[i - 1] = x_11 * amplitudes_i_1 + x_12 * amplitudes_i;
-  amplitudes_[i] = x_21 * amplitudes_i_1 + x_22 * amplitudes_i;
+  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1];
+  Cmplx<T> amplitudes_i = amplitudes_[i];
+
+  amplitudes_[i - 1] = (x_11 * amplitudes_i_1 + x_12 * amplitudes_i) / devisor;
+  amplitudes_[i] = (x_21 * amplitudes_i_1 + x_22 * amplitudes_i) / devisor;
 }
 
 template <typename T>
@@ -196,13 +198,13 @@ void QReg<T>::applyXconjugate(uint64_t i, Cmplx<T> x, Cmplx<T> y) {
   Cmplx<T> x_21 = -std::conj(y);
   Cmplx<T> x_22 = x;
 
-  T devisor_inv = 1.0 / std::sqrt(
-    std::abs(x) * std::abs(x) + std::abs(y) * std::abs(y));
-  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1] * devisor_inv;
-  Cmplx<T> amplitudes_i = amplitudes_[i] * devisor_inv;
+  T devisor = std::sqrt(std::abs(x) * std::abs(x) + std::abs(y) * std::abs(y));
 
-  amplitudes_[i - 1] = x_11 * amplitudes_i_1 + x_12 * amplitudes_i;
-  amplitudes_[i] = x_21 * amplitudes_i_1 + x_22 * amplitudes_i;
+  Cmplx<T> amplitudes_i_1 = amplitudes_[i - 1];
+  Cmplx<T> amplitudes_i = amplitudes_[i];
+
+  amplitudes_[i - 1] = (x_11 * amplitudes_i_1 + x_12 * amplitudes_i) / devisor;
+  amplitudes_[i] = (x_21 * amplitudes_i_1 + x_22 * amplitudes_i) / devisor;
 }
 
 template <typename T>

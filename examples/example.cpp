@@ -34,12 +34,14 @@ int main(int argc, char const *argv[]) {
   const uint64_t n = 8;
   const uint64_t q = 1 << n;
   const auto epsilon = 0.2f;
-  const uint64_t dim = std::llround(n / (epsilon * epsilon));
+  const auto dim = static_cast<const uint64_t>(
+          std::llround(n / (epsilon * epsilon)));
 
   std::vector<uint64_t> k;
   k.reserve(dim);
   for (auto i = 0ULL; i < dim; ++i)
     k.push_back(i);
+
   const uint64_t word_a = 15;
   const uint64_t word_b = 15;
 
@@ -47,20 +49,16 @@ int main(int argc, char const *argv[]) {
   qengine::Circuit<double> circuit(nreg, dim);
 
   const auto applyF0 = [&dim, &circuit] (uint64_t idx) -> void {
-    auto d_inv = 1.0 / std::sqrt(dim);
-    for (uint64_t i = 1ULL; i < dim; ++i)
-    {
-      auto b = std::sqrt(1.0 - i * d_inv);
-      circuit.applyX(idx, i, d_inv, b);
+    for (uint64_t i = 1ULL; i < dim; ++i) {
+      auto b = std::sqrt(static_cast<double>(dim - i) / dim);
+      circuit.applyX(idx, i, std::sqrt(1.0 / dim), b);
     }
   };
 
   const auto applyF0conjugate = [&dim, &circuit] (uint64_t idx) -> void {
-    auto d_inv = 1.0 / std::sqrt(dim);
-    for (uint64_t i = dim - 1; i > 0ULL; --i)
-    {
-      auto b = std::sqrt(1.0 - i * d_inv);
-      circuit.applyXconjugate(idx, i, d_inv, b);
+    for (uint64_t i = dim - 1; i > 0ULL; --i) {
+      auto b = std::sqrt(static_cast<double>(dim - i) / dim);
+      circuit.applyXconjugate(idx, i, std::sqrt(1.0 / dim), b);
     }
   };
 
@@ -69,7 +67,11 @@ int main(int argc, char const *argv[]) {
   std::cout << "eps = " << epsilon << "\n";
   std::cout << "dim = " << dim << "\n";
   std::cout << "a   = " << word_a << "\n";
-  std::cout << "b   = " << word_b << std::endl;
+  std::cout << "b   = " << word_b << "\n";
+  for (const auto & k_i : k)
+    std::cout << k_i << ", ";
+  std::cout << std::endl;
+
 
   // Применение хеш-функции
   // Получаем состяние $\ket{\psi(a)}$
@@ -80,14 +82,14 @@ int main(int argc, char const *argv[]) {
 
   // Reverse-тест
   for (uint64_t i = 0; i < dim; ++i)
-    circuit.applyZ(
+    circuit.applyZconjugate(
       0, dim - i - 1, static_cast<double>(word_b * k[dim - i - 1]) / n);
   applyF0conjugate(0);
 
   circuit.measure(0, 0);
-  auto cregs = circuit.cregs();
+  auto result = circuit.cregs()[0];
 
-  if (cregs[0] == 0LL) {
+  if (result == 0LL) {
     std::cout << "\nTEST PASSED" << std::endl;
   } else {
     std::cout << "\nTEST FAIL" << std::endl;
