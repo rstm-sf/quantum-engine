@@ -8,11 +8,10 @@ file(GLOB TARGET_SRC
 )
 add_executable(${TARGET} ${TARGET_SRC})
 
-target_include_directories(${TARGET}
-    PRIVATE
-        ${GSL_INCLUDE_DIR}
-        ${QENGINE_DIR}/include
-        ${QENGINE_DIR}/utils
-)
-
 target_compile_features(${TARGET} PUBLIC cxx_std_17)
+
+target_link_libraries(${TARGET}
+    PRIVATE
+        GSL
+        qengine
+)

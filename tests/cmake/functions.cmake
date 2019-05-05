@@ -8,5 +8,7 @@ function(custom_add_executable_from_dir TARGET)
     target_link_libraries(${TARGET}
         GTest::GTest
         GTest::Main
+        GSL
+        qengine
     )
 endfunction()
