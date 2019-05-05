@@ -49,6 +49,9 @@ public:
   std::vector<QReg<T>> qregs() const;
   std::vector<CReg> cregs() const;
 
+  uint64_t nreg() const;
+  uint64_t dim() const;
+
   void apply(uint64_t idx_qreg, RMat<T>);
   void apply(uint64_t idx_qreg, CMat<T>);
 
@@ -79,6 +82,12 @@ std::vector<QReg<T>> Circuit<T>::qregs() const { return qregs_; }
 
 template <typename T>
 std::vector<CReg> Circuit<T>::cregs() const { return cregs_; }
+
+template <typename T>
+uint64_t Circuit<T>::nreg() const { return qregs_.size(); }
+
+template <typename T>
+uint64_t Circuit<T>::dim() const { return qregs_[0].sdim(); }
 
 template <typename T>
 void Circuit<T>::apply(uint64_t idx_qreg, RMat<T> mat_op) {

@@ -65,7 +65,7 @@ int main(int argc, char const *argv[]) {
   std::cout << "n   = " << n << "\n";
   std::cout << "q   = " << q << "\n";
   std::cout << "eps = " << epsilon << "\n";
-  std::cout << "dim = " << dim << "\n";
+  std::cout << "dim = " << circuit.dim() << "\n";
   std::cout << "a   = " << word_a << "\n";
   std::cout << "b   = " << word_b << "\n";
   for (const auto & k_i : k)
