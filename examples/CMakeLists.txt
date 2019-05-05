@@ -11,8 +11,8 @@ add_executable(${TARGET} ${TARGET_SRC})
 target_include_directories(${TARGET}
     PRIVATE
         ${GSL_INCLUDE_DIR}
-        ${CMAKE_SOURCE_DIR}/qengine/include
-        ${CMAKE_SOURCE_DIR}/qengine/utils
+        ${QENGINE_DIR}/include
+        ${QENGINE_DIR}/utils
 )
 
 target_compile_features(${TARGET} PUBLIC cxx_std_17)
