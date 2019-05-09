@@ -134,9 +134,9 @@ void Circuit<T>::applyZconjugate(uint64_t idx_qreg, uint64_t i, double tau) {
 template <typename T>
 void Circuit<T>::measure(uint64_t idx_qreg, uint64_t idx_creg) {
   RVec<T> probs(qregs_[idx_qreg].probabilities());
-  std::discrete_distribution<uint16_t> distrib(probs.begin(), probs.end());
+  std::discrete_distribution<CReg> distrib(probs.begin(), probs.end());
 
-  const uint16_t result = distrib(rand_eng_.mte());
+  const CReg result = distrib(rand_eng_.mte());
 
   // TODO: применить ли изменение состояния после измерения?
   // RMat<T> Z(probs.size());
