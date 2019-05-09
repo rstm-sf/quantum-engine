@@ -39,7 +39,7 @@ target_compile_definitions(${TARGET} INTERFACE
 # add include folders to the library and targets that consume it
 target_include_directories(${TARGET} INTERFACE
     $<BUILD_INTERFACE:
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/utils
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
     >
 )

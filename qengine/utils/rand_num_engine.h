@@ -25,26 +25,26 @@
 
 #include <random>
 
+namespace qengine {
+inline namespace util {
+
 class RandNumEngine {
 public:
-  ~RandNumEngine();
+  ~RandNumEngine() = default;
   RandNumEngine(const RandNumEngine&) = delete;
   RandNumEngine(RandNumEngine&&) = delete;
   RandNumEngine& operator=(const RandNumEngine&) = delete;
   RandNumEngine& operator=(RandNumEngine&&) = delete;
 
-  RandNumEngine(uint32_t seed = 1);
+  explicit RandNumEngine(uint32_t seed = 1) : mt_{seed} {}
 
-  std::mt19937& mte();
+  std::mt19937& mte() { return mt_; }
 
 private:
   std::mt19937 mt_;
 };
 
-RandNumEngine::~RandNumEngine() = default;
-
-RandNumEngine::RandNumEngine(uint32_t seed) : mt_{seed} {}
-
-std::mt19937& RandNumEngine::mte() { return mt_; }
+} // namespace util
+} // namespace qengine
 
 #endif // QENGINE_UTILS_RAND_NUM_ENGINE_H_
