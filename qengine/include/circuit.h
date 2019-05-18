@@ -64,6 +64,8 @@ public:
 
   void measure(uint64_t idx_qreg, uint64_t idx_creg);
 
+  CReg get_creg(uint64_t idx_creg) const;
+
 protected:
   std::vector<QReg<T>> qregs_;
   std::vector<CReg> cregs_;
@@ -145,6 +147,9 @@ void Circuit<T>::measure(uint64_t idx_qreg, uint64_t idx_creg) {
 
   cregs_[idx_creg] = result;
 }
+
+template <typename T>
+CReg Circuit<T>::get_creg(uint64_t idx_creg) const { return cregs_[idx_creg]; }
 
 } // namespace qsystem
 } // namespace qengine
